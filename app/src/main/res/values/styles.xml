@@ -1,0 +1,91 @@
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.Light" />
+
+
+    <style name="main_button">
+
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:gravity">left</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
+    <style name="panel_textview">
+
+        <item name="android:textColor">#000000</item>
+        <item name="android:background">#ffffff</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:padding">3dp</item>
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">.33</item>
+
+
+    </style>
+
+    <style name="panel_main_label">
+        <item name="android:layout_weight">.33</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dip</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20dp</item>
+
+    </style>
+
+    <style name="panel_textlabel">
+        <item name="android:textColor">#99ffff</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:layout_weight">.33</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+
+    </style>
+
+    <style name="readout_cell">
+        <item name="android:weightSum">1.0</item>
+        <item name="android:layout_weight">.2</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dip</item>
+        <item name="android:orientation">vertical</item>
+
+    </style>
+
+    <style name="prompt_row">
+        <item name="android:weightSum">1.0</item>
+        <item name="android:layout_weight">.4</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dip</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">3dp</item>
+
+    </style>
+
+    <style name="readout_row">
+        <item name="android:weightSum">1.0</item>
+        <item name="android:layout_weight">.6</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dip</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">3dp</item>
+
+    </style>
+
+    <style name="panel_values_area">
+
+        <item name="android:weightSum">1.0</item>
+        <item name="android:layout_weight">.6</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dip</item>
+        <item name="android:orientation">vertical</item>
+
+    </style>
+
+
+</resources>

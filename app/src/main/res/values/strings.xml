@@ -1,0 +1,16 @@
+<resources>
+
+    <string name="app_name">DataGatherer</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Sensor Data Gatherer</string>
+    <string name="action_settings">Action Settings</string>
+    <string name="labelPos">Label Negative</string>
+    <string name="labelNeg">Label Positive</string>
+    <string name="labelIndicatorPrompt">Labeling Positive</string>
+    <string name="startGathering">Start Gathering</string>
+    <string name="stopGathering">Stop Gathering</string>
+    <string name="gatheringPrompt">Gathering</string>
+    <string name="save_csv">Save CSV</string>
+    <string name="delete_csv">Delete CSV</string>
+    <string name="clear_db">Clear Database</string>
+</resources>
