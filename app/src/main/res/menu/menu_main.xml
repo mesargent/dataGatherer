@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
     <item
+        android:id="@+id/change_predictor"
+        android:orderInCategory="100"
+        android:title="Change Predictor"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/save_csv"
         android:orderInCategory="100"
         android:title="@string/save_csv"

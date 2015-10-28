@@ -4,8 +4,11 @@
     <color name="custom_background">#333333</color>
     <color name="blue">#3333ff</color>
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="gray">#444444</color>
+    <color name="green">#00ff00</color>
+    <color name="red">#0000ff</color>
     <color name="label_background">#222222</color>
     <color name="sub_label">#99ffff</color>
-
 
 </resources>

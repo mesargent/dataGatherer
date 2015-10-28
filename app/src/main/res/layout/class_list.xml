@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="1.0">
 
     <ListView
+        android:id="@android:id/list"
         android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight=".8"
+        />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listView" />
+        android:id="@+id/progressBar"
+        android:layout_gravity="center"
+        android:layout_marginBottom="350px"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight=".2"
+        android:text="Add Category"
+        android:id="@+id/add_category"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 </LinearLayout>

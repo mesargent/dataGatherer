@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">DataGatherer</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">Sensor Data Gatherer</string>
@@ -13,4 +12,10 @@
     <string name="save_csv">Save CSV</string>
     <string name="delete_csv">Delete CSV</string>
     <string name="clear_db">Clear Database</string>
+    <string name="category">Category</string>
+    <string name="enter">Enter</string>
+    <string name="log_reg">Logistic Regression</string>
+    <string name="svm">Support Vector Machine</string>
+    <string name="neural_net">Neural Net</string>
+
 </resources>

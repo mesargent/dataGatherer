@@ -21,12 +21,29 @@
             android:name="com.detroitteatime.datagatherer.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light">
+            android:theme="@style/Theme.AppCompat.Light"
+             >
+        </activity>
+        <activity
+            android:name="com.detroitteatime.datagatherer.ModelList"
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.detroitteatime.datagatherer.CategoryDialog"
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:noHistory="true" >
+
         </activity>
 
         <service android:name="com.detroitteatime.datagatherer.SensorService">

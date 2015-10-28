@@ -10,7 +10,7 @@
                 android:width="1dp"
                 android:color="#20f8f6" />
             <corners
-                android:radius="0dp" /> // set to 0 or erase it for sharp corners
+                android:radius="0dp" />
             <padding
                 android:left="10dp"
                 android:top="10dp"
