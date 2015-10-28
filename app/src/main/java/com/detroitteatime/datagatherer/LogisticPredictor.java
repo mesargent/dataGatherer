@@ -5,8 +5,10 @@ package com.detroitteatime.datagatherer;
  */
 public class LogisticPredictor extends Predictor{
 
+    private double yIntercept;
+
     @Override
-    public double predictProb(int[] parameters, int[] features, int yIntercept) {
+    public double predictProb(double[] features) {
         if(parameters.length != features.length) throw new IllegalArgumentException("Feature and parameter arrays must be the same length.");
         double pTX = 0;
 
@@ -18,13 +20,22 @@ public class LogisticPredictor extends Predictor{
     }
 
 
-    public boolean predict(int[] parameters, int[] features, int yIntercept){
-        return predictProb(parameters, features, yIntercept) > 0.5;
+    @Override
+    public boolean predict(double[] features) {
+        return predictProb(features) > 0.5;
     }
 
     public double sigmoid(double pTransposeF) throws IllegalArgumentException{
 
-            return 1 / (1 + Math.exp(- pTransposeF));
+        return 1 / (1 + Math.exp(- pTransposeF));
 
+    }
+
+    public double getyIntercept() {
+        return yIntercept;
+    }
+
+    public void setyIntercept(double yIntercept) {
+        this.yIntercept = yIntercept;
     }
 }

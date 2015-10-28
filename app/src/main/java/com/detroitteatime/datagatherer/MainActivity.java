@@ -1,6 +1,5 @@
 package com.detroitteatime.datagatherer;
 
-
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -46,6 +46,7 @@ public class MainActivity extends ActionBarActivity {
     private ToggleButton start;
     private ToggleButton label;
     private Button process, save;
+    private TextView modelName, modelClass, modelMethod;
 
     private String format = "%.5f";
 
@@ -56,11 +57,17 @@ public class MainActivity extends ActionBarActivity {
             xAcc, yAcc, zAcc,
             xGyro, yGyro, zGyro,
             xMag, yMag, zMag,
-            speed;
+            speed, predictorInfo;
+
+    private FrameLayout predictionDisplay;
 
     private ResponseReceiver receiver;
     private DataBaseHelper dbHelper;
     private List<DataSet> dataArray;
+    private long predictorId;
+    private Predictor predictor;
+    private boolean isDisplayingPredictions;
+
 
 
     @SuppressWarnings("deprecation")
@@ -73,7 +80,16 @@ public class MainActivity extends ActionBarActivity {
         receiver = new ResponseReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, mStatusIntentFilter);
 
+        DataBaseHelper helper = new DataBaseHelper(MainActivity.this);
+        //Get the Predictor row id
+        predictorId = this.getIntent().getLongExtra(DataBaseHelper.ID, 0);
+
+        //Instantiate the Predictor
+        predictor = helper.getPredictorById(predictorId);
+
+
         //Get all the textviews
+        predictorInfo = (TextView)findViewById(R.id.predictorInfo);
         xAcc = (TextView) findViewById(R.id.accelX);
         yAcc = (TextView) findViewById(R.id.accelY);
         zAcc = (TextView) findViewById(R.id.accelZ);
@@ -84,6 +100,11 @@ public class MainActivity extends ActionBarActivity {
         yMag = (TextView) findViewById(R.id.magY);
         zMag = (TextView) findViewById(R.id.magZ);
         speed = (TextView) findViewById(R.id.speedView);
+
+        //set predictorInfo
+        predictorInfo.setText(String.format("Name: %s, Category: %s, Method: %s",
+                predictor.getName(), predictor.getCategory(), predictor.getMethod()));
+
 
         start = (ToggleButton) findViewById(R.id.start);
         start.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -96,7 +117,7 @@ public class MainActivity extends ActionBarActivity {
                             SensorService.class), mConnection, BIND_AUTO_CREATE);
                     mBound = true;
                     dataArray = new ArrayList<>();
-
+                    isDisplayingPredictions = false;
 
                 } else {
                     //These operations were making the UI unresponsive
@@ -115,10 +136,7 @@ public class MainActivity extends ActionBarActivity {
                             }
                         }
                     }).start();
-
-
                 }
-
             }
         });
 
@@ -144,9 +162,7 @@ public class MainActivity extends ActionBarActivity {
                     public void run() {
 
                         dbHelper = (dbHelper == null) ? new DataBaseHelper(MainActivity.this): dbHelper;
-                        dbHelper.open(DataBaseHelper.WRITEABLE);
                         dbHelper.insertDataArray(dataArray);
-                        dbHelper.close();
                         dataArray.clear();
                     }
                 }).start();
@@ -162,6 +178,8 @@ public class MainActivity extends ActionBarActivity {
 
             }
         });
+
+        predictionDisplay = (FrameLayout)findViewById(R.id.predictor_display);
     }
 
     @Override
@@ -173,7 +191,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        dbHelper.close();
+
     }
 
     @Override
@@ -197,6 +215,10 @@ public class MainActivity extends ActionBarActivity {
             case R.id.clear_db:
                 deleteDatabase(DataBaseHelper.DB_NAME);
                 return true;
+            case R.id.change_predictor:
+                Intent intent = new Intent(MainActivity.this, ModelList.class);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -205,19 +227,10 @@ public class MainActivity extends ActionBarActivity {
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
-            // This is called when the connection with the service has been
-            // established, giving us the service object we can use to
-            // interact with the service.  Because we have bound to a explicit
-            // service that we know is running in our own process, we can
-            // cast its IBinder to a concrete class and directly access it.
             mBoundService = ((SensorService.LocalBinder) service).getService();
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            // This is called when the connection with the service has been
-            // unexpectedly disconnected -- that is, its process crashed.
-            // Because it is running in our same process, we should never
-            // see this happen.
             mBoundService = null;
         }
     };
@@ -248,21 +261,28 @@ public class MainActivity extends ActionBarActivity {
 
             speed.setText(String.format(format, data.getSpeedGPS()));
             Log.i("My Code", "Received Object ref: " + data.toString());
+
+            if(isDisplayingPredictions){
+                double[] features = {data.getAccelX(), data.getAccelY(), data.getAccelZ()};
+                if(predictor.predict(features))
+                    predictionDisplay.setBackgroundColor(getResources().getColor(R.color.green));
+                else
+                    predictionDisplay.setBackgroundColor(getResources().getColor(R.color.red));
+            }
         }
     }
-
 
     class SendJSONTask extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... strings) {
-
             DataBaseHelper helper = new DataBaseHelper(MainActivity.this);
-            helper.open(DataBaseHelper.READABLE);
+
+            helper.open(DataBaseHelper.WRITEABLE);
 
             Cursor cursor = helper.getData();
 
             JSONArray jArray = DataAccess.cursorToJSON(cursor);
-           // Log.i("json", jArray.toString());
+            helper.close();
             HttpClient httpClient = new DefaultHttpClient();
             HttpContext httpContext = new BasicHttpContext();
 
@@ -276,12 +296,15 @@ public class MainActivity extends ActionBarActivity {
                 httpPost.setHeader("Accept", "application/json");
                 httpPost.setHeader("Content-type", "application/json");
 
-
                 HttpResponse response = httpClient.execute(httpPost, httpContext); //execute your request and parse response
                 HttpEntity entity = response.getEntity();
 
                 String jsonString = EntityUtils.toString(entity); //if response in JSON format
                 Log.i("json", "returned: " + jsonString);
+                predictor.setModel(jsonString);
+                helper.persistPredictor(predictor);
+                isDisplayingPredictions = true;
+                helper.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
