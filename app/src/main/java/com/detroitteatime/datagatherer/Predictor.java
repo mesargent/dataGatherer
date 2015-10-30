@@ -9,7 +9,6 @@ public abstract class Predictor {
     private String model; //JSON string
     private String parameterString; //JSON string
     private String method;
-    protected double[] features;
     protected double[] parameters;
 
 
@@ -60,14 +59,6 @@ public abstract class Predictor {
 
     public void setMethod(String method) {
         this.method = method;
-    }
-
-    public double[] getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(double[] features) {
-        this.features = features;
     }
 
     public double[] getParameters() {

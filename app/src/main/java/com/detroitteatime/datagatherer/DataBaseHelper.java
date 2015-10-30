@@ -151,7 +151,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
 			try{
 				ourDatabase.insertOrThrow(SENSOR_TABLE_NAME, "nullColumnHack", cv);
-				ourDatabase.close();
+
 			}catch(Exception e){
 				if(e.getMessage()!= null) Log.e("My Code", e.getMessage());
 			}

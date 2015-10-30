@@ -9,7 +9,7 @@ public class LogisticPredictor extends Predictor{
 
     @Override
     public double predictProb(double[] features) {
-        if(parameters.length != features.length) throw new IllegalArgumentException("Feature and parameter arrays must be the same length.");
+        if(parameters.length != features.length || features == null) throw new IllegalArgumentException("Feature and parameter arrays must be the same length.");
         double pTX = 0;
 
         for(int i = 0; i < features.length; i++){

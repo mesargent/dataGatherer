@@ -42,7 +42,7 @@ public class DataAccess {
         return resultSet;
     }
 
-    public static void saveToCSVFile(Context context) {
+    public static File saveToCSVFile(Context context) {
 
         DataBaseHelper helper = new DataBaseHelper(context);
         helper.open(DataBaseHelper.READABLE);
@@ -50,13 +50,12 @@ public class DataAccess {
         Cursor cursor = helper.getData();
         BufferedWriter writer = null;
 
-        String fileName = DateFormat.getDateTimeInstance().format(new Date()) + ".csv";
+        String fileName = new Date().getTime() + ".csv";
 
         File myDir = new File(Environment.getExternalStorageDirectory(), dir);
         myDir.mkdirs();
 
         File file = new File(myDir.getAbsolutePath(), fileName);
-
 
         try {
             writer = new BufferedWriter(new FileWriter(file));
@@ -224,6 +223,7 @@ public class DataAccess {
         cursor.close();
         helper.close();
 
+        return file;
     }
 
     public static void deleteCSV() {

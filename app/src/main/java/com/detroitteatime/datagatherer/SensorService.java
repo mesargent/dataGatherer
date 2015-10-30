@@ -104,7 +104,10 @@ public class SensorService extends Service implements LocationListener, SensorEv
 
     @Override
     public void onDestroy() {
-        // TODO Auto-generated method stub
+        // TODO Auto-generated method stubdata.setSpeedGPS(speedGps);
+        data.setTime(timeStamp);
+        data.setLat(lattitude);
+        data.setLng(longitude);
         super.onDestroy();
 
             if (manager != null) {
@@ -184,13 +187,13 @@ public class SensorService extends Service implements LocationListener, SensorEv
 
         }
 
+        //Log.i("My Code", "Value positive: " + data.isPositive());
+        timeStamp = s.format(new Date());
+
         data.setSpeedGPS(speedGps);
         data.setTime(timeStamp);
         data.setLat(lattitude);
         data.setLng(longitude);
-
-        //Log.i("My Code", "Value positive: " + data.isPositive());
-        timeStamp = s.format(new Date());
 
         Intent localIntent = new Intent(Constants.BROADCAST_SENSOR_DATA).putExtra(Constants.DATA, data);
         LocalBroadcastManager.getInstance(SensorService.this).sendBroadcast(localIntent);
