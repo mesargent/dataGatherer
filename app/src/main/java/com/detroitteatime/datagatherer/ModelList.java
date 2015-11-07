@@ -5,15 +5,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import com.example.datagatherer.R;
 
@@ -51,16 +48,36 @@ public class ModelList extends ListActivity {
             }
         });
 
-        QueryDatabaseTask qt = new QueryDatabaseTask();
-        qt.execute();
+
+
+        this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(ModelList.this, CategoryEditor.class);
+                intent.putExtra("id", l);
+                startActivity(intent);
+                return true;
+            }
+        });
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         helper.close();
         cursor.close();
+
     }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        QueryDatabaseTask qt = new QueryDatabaseTask();
+        qt.execute();
+
+    }
+
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -69,7 +86,6 @@ public class ModelList extends ListActivity {
         i.putExtra(DataBaseHelper.ID, id);
         startActivity(i);
     }
-
 
 
 
@@ -88,7 +104,9 @@ public class ModelList extends ListActivity {
             pb.setVisibility(View.GONE);
             String[] columns = {DataBaseHelper.NAME, DataBaseHelper.CLASS, DataBaseHelper.METHOD};
             int[] to = {R.id.name, R.id.category, R.id.method};
+
             CursorAdapter adapter = new ModelAdapter(ModelList.this, cursor, 0);
+            adapter.swapCursor(cursor);
             setListAdapter(adapter);
 
 
@@ -96,6 +114,7 @@ public class ModelList extends ListActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
+
 
             cursor = helper.getModelData();
 

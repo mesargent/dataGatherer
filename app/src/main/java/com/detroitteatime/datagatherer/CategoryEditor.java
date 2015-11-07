@@ -12,11 +12,17 @@ import android.widget.RadioGroup;
 
 import com.example.datagatherer.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class CategoryDialog extends Activity {
+/**
+ * Created by marksargent on 11/6/15.
+ */
+public class CategoryEditor  extends Activity {
+
     protected Button enter;
     protected EditText name, category, noPCs;
     protected RadioGroup methodGroup;
@@ -27,6 +33,7 @@ public class CategoryDialog extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.category_dialog);
+
         methodGroup = (RadioGroup) findViewById(R.id.method_group);
         name = (EditText) findViewById(R.id.name);
         category = (EditText) findViewById(R.id.category);
@@ -44,6 +51,54 @@ public class CategoryDialog extends Activity {
         zGyro = (CheckBox) findViewById(R.id.z_gyro);
         pca = (CheckBox) findViewById(R.id.pca);
         noPCs = (EditText) findViewById(R.id.no_pcs);
+
+        //Get predictor's id number
+        Intent intent = getIntent();
+        long id = intent.getLongExtra("id", -1);
+
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+        dataBaseHelper.open(DataBaseHelper.WRITEABLE);
+        Predictor predictor = dataBaseHelper.getPredictorById(id);
+
+        name.setText(predictor.getName());
+
+        category.setText(predictor.getCategory());
+        String params = predictor.getParameterString();
+        try {
+            JSONObject obj = new JSONObject(params);
+            noPCs.setText(obj.get("no_pc").toString());
+
+            boolean usePCA = obj.getBoolean("fit_using_pca");
+            pca.setChecked(usePCA);
+
+            JSONArray sArray = obj.getJSONArray("sensor_array");
+            JSONArray cArray = obj.getJSONArray("C_array");
+
+            cp01.setChecked(cArray.toString().contains(".01"));
+            cp1.setChecked(cArray.toString().contains(".1"));
+            c1.setChecked(cArray.toString().contains("1,"));
+            c10.setChecked(cArray.toString().contains("10,"));
+            c100.setChecked(cArray.toString().contains("100,"));
+
+            xAcc.setChecked(sArray.toString().contains(DataBaseHelper.ACCELX));
+            yAcc.setChecked(sArray.toString().contains(DataBaseHelper.ACCELY));
+            zAcc.setChecked(sArray.toString().contains(DataBaseHelper.ACCELZ));
+            xGyro.setChecked(sArray.toString().contains(DataBaseHelper.GYROX));
+            yGyro.setChecked(sArray.toString().contains(DataBaseHelper.GYROY));
+            zGyro.setChecked(sArray.toString().contains(DataBaseHelper.GYROZ));
+
+            switch (predictor.getMethod()){
+                case Constants.LOGISIC_REGRESSION:
+                    methodGroup.check(R.id.log_reg);
+                    break;
+                case Constants.SVM:
+                    methodGroup.check(R.id.svm);
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,11 +167,11 @@ public class CategoryDialog extends Activity {
 
                 JSONObject params = DataAccess.makeParamJSON(cParams, sensors, pca.isChecked(), pcs);
 
-                DataBaseHelper helper = new DataBaseHelper(CategoryDialog.this);
+                DataBaseHelper helper = new DataBaseHelper(CategoryEditor.this);
                 helper.insertModel(name.getText().toString(), category.getText().toString(), method, params.toString(), null);
                 helper.close();
 
-                Intent intent = new Intent(CategoryDialog.this, ModelList.class);
+                Intent intent = new Intent(CategoryEditor.this, ModelList.class);
                 startActivity(intent);
             }
         });

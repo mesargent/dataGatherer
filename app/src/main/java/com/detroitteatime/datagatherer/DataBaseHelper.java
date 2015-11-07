@@ -285,7 +285,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 			case Constants.NEURAL_NET:
 				break;
 		}
-		c.close();
+
 
 		return p;
 	}

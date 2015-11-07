@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class DataAccess {
@@ -244,4 +246,42 @@ public class DataAccess {
         fileOrDirectory.delete();
 
     }
+
+    public static JSONObject makeParamJSON(ArrayList<Double> cValues, ArrayList<String> sensors,
+                                           boolean usePCA, int noPc){
+            JSONObject obj = new JSONObject();
+            JSONArray cArray = new JSONArray();
+            JSONArray sArray = new JSONArray();
+
+        try {
+
+            for(double val: cValues){
+                cArray.put(val);
+            }
+
+            obj.put("C_array", cArray);
+
+            for(String s: sensors){
+                sArray.put(s);
+            }
+
+            obj.put("sensor_array", sArray);
+            obj.put("fit_using_pca", usePCA);
+            obj.put("no_pc", noPc);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
+//    /**
+//     * Determines if a key/value pair is in
+//     *
+//     */
+//
+//
+//    public static boolean valueExists(String key, String value){
+//
+//    }
 }

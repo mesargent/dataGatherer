@@ -2,13 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1.0">
+    android:weightSum="1.0"
+    android:background="@color/custom_background">
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight=".8"
+
         />
 
     <ProgressBar
@@ -19,6 +21,8 @@
         android:layout_marginBottom="350px"/>
 
     <Button
+        style="@style/main_button"
+        android:background="@drawable/button_shape_normal"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight=".2"
