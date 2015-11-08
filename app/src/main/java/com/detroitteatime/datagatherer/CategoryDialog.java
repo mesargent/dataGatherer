@@ -279,7 +279,7 @@ public class CategoryDialog extends Activity {
                 DataBaseHelper helper = DataBaseHelper.getInstance(CategoryDialog.this);
 
                 if(id!=-1){
-                    helper.editModel(id, name.getText().toString(), category.getText().toString(), method, params.toString(), null);
+                    helper.editPredictor(id, name.getText().toString(), category.getText().toString(), method, params.toString(), null);
                 }else{
 
                     helper.insertModel(name.getText().toString(), category.getText().toString(), method, params.toString(), null);
@@ -296,7 +296,7 @@ public class CategoryDialog extends Activity {
             public void onClick(View view) {
                 DataBaseHelper helper = DataBaseHelper.getInstance(CategoryDialog.this);
 
-                helper.deleteModel(id);
+                helper.deletePredictor(id);
 
                 Intent intent = new Intent(CategoryDialog.this, ModelList.class);
                 startActivity(intent);

@@ -273,32 +273,34 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return cv;
     }
 
-    public void insertModel(String name, String c, String method, String params, String model) {
+    public long insertModel(String name, String c, String method, String params, String model) {
         ourDatabase = getWritableDatabase();
         ContentValues cv = setModelCV(name, c, method, params, model);
+        long id = 0;
         try {
-            ourDatabase.insertOrThrow(MODEL_TABLE_NAME, "nullColumnHack", cv);
+            id = ourDatabase.insertOrThrow(MODEL_TABLE_NAME, "nullColumnHack", cv);
 
         } catch (Exception e) {
             if (e.getMessage() != null) Log.e("My Code", e.getMessage());
         }
+        return id;
     }
 
-    public void editModel(long id, String name, String c, String method, String params, String model) {
+    public void editPredictor(long id, String name, String c, String method, String params, String model) {
         ourDatabase = getWritableDatabase();
-        ContentValues cv = setModelCV(name, model, c, method, params);
+        ContentValues cv = setModelCV(name, c, method, params, model);
         String[] ids = {String.valueOf(id)};
         ourDatabase.update(MODEL_TABLE_NAME, cv, "_id=?", ids);
 
     }
 
-    public void deleteModel(long id) {
+    public void deletePredictor(long id) {
         ourDatabase = getWritableDatabase();
         String[] ids = {String.valueOf(id)};
         ourDatabase.delete(MODEL_TABLE_NAME, "_id=?", ids);
     }
 
-    public Cursor getModelById(long id) {
+    public Cursor getPredictorCursor(long id) {
         ourDatabase = getWritableDatabase();
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables(MODEL_TABLE_NAME);
@@ -310,7 +312,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Cursor getModelData() {
+    public Cursor getPredictorData() {
         ourDatabase = getWritableDatabase();
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables(MODEL_TABLE_NAME);
@@ -323,7 +325,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public Predictor getPredictorById(long id) {
         ourDatabase = getWritableDatabase();
-        Cursor c = getModelById(id);
+        Cursor c = getPredictorCursor(id);
         c.moveToFirst();
         int idx = c.getColumnIndex(METHOD);
         Predictor p = null;
@@ -342,6 +344,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 p.setName(name);
                 p.setParameterString(parameters);
                 p.setMethod(method);
+                p.setId(id);
                 break;
 
             case Constants.SVM:
@@ -350,11 +353,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 break;
         }
 
-
         return p;
     }
 
-    public void persistPredictor(Predictor p) {
-        insertModel(p.getName(), p.getCategory(), p.getMethod(), p.getParameterString(), p.getModel());
+
+    public void editPredictor(Predictor p) {
+        editPredictor(p.getId(), p.getName(), p.getCategory(), p.getMethod(), p.getParameterString(), p.getModel());
     }
 }

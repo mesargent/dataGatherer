@@ -119,7 +119,7 @@ public class ModelList extends ListActivity {
         protected Void doInBackground(Void... params) {
 
 
-            cursor = helper.getModelData();
+            cursor = helper.getPredictorData();
 
             if (cursor.getCount() != 0) {
                 cursor.moveToFirst();

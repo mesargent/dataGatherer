@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,8 +48,8 @@ public class MainActivity extends ActionBarActivity {
 
     private ToggleButton start;
     private ToggleButton label;
-    private Button process, save;
-    private TextView modelName, modelClass, modelMethod;
+    private Button process, save, results;
+    private ProgressBar progress;
 
     private String format = "%.5f";
 
@@ -70,6 +71,7 @@ public class MainActivity extends ActionBarActivity {
     private SeekBar deltaBar, samplingBar;
     private int samplingRate = 200;
     private int delta;
+
 
 
     @SuppressWarnings("deprecation")
@@ -99,6 +101,7 @@ public class MainActivity extends ActionBarActivity {
 
         //Instantiate the Predictor
         predictor = helper.getPredictorById(predictorId);
+
 
         //Get all the textviews
         title = (TextView) findViewById(R.id.title_prompt);
@@ -146,7 +149,7 @@ public class MainActivity extends ActionBarActivity {
 
                 samplingRate = 200 + i * 50;
                 sRateVal.setText(samplingRate + " ms");
-                if(mBound){
+                if (mBound) {
                     mBoundService.setFreq(samplingRate);
                 }
             }
@@ -238,7 +241,21 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        //get delta value
+        results = (Button) findViewById(R.id.view_results);
+        results.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ResultsView.class);
+                intent.putExtra("predictorId", predictorId);
+                startActivity(intent);
+            }
+        });
+
+        progress = (ProgressBar) findViewById(R.id.progressBar);
+
+        if(predictor.getModel()!=null){
+            results.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -333,9 +350,24 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
     class SendJSONTask extends AsyncTask<String, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            process.setVisibility(View.GONE);
+            progress.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            process.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
+            results.setVisibility(View.VISIBLE);
+        }
+
         @Override
         protected Void doInBackground(String... strings) {
             DataBaseHelper helper = DataBaseHelper.getInstance(MainActivity.this);
@@ -343,15 +375,13 @@ public class MainActivity extends ActionBarActivity {
             Cursor cursor = helper.getData();
 
             JSONArray jArray = DataAccess.cursorToJSON(cursor);
-
-
             JSONObject bundle = new JSONObject();
             try {
                 bundle.put("data", jArray);
-                if(predictor.getName()!=null)
-                bundle.put("name", predictor.getName());
-                if(predictor.getCategory()!=null)
-                bundle.put("class", predictor.getCategory());
+                if (predictor.getName() != null)
+                    bundle.put("name", predictor.getName());
+                if (predictor.getCategory() != null)
+                    bundle.put("class", predictor.getCategory());
                 bundle.put("method", predictor.getMethod());
                 bundle.put("params", predictor.getParameterString());
                 bundle.put("delta", delta);
@@ -379,9 +409,9 @@ public class MainActivity extends ActionBarActivity {
                 HttpEntity entity = response.getEntity();
 
                 String jsonString = EntityUtils.toString(entity); //if response in JSON format
-                Log.i("json", "returned: " + jsonString);
+                Log.i("My Code", "returned: " + jsonString);
                 predictor.setModel(jsonString);
-                helper.persistPredictor(predictor);
+                helper.editPredictor(predictor);
 
 
             } catch (Exception e) {
