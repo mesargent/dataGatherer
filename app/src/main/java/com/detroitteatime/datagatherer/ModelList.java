@@ -5,15 +5,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import com.example.datagatherer.R;
 
@@ -32,7 +29,6 @@ public class ModelList extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.class_list);
-        getListView().invalidate();
 
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -51,15 +47,41 @@ public class ModelList extends ListActivity {
             }
         });
 
-        QueryDatabaseTask qt = new QueryDatabaseTask();
-        qt.execute();
+
+
+        this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(ModelList.this, CategoryDialog.class);
+                intent.putExtra("id", l);
+                startActivity(intent);
+                return true;
+            }
+        });
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        helper.close();
+    protected void onDestroy() {
+        super.onDestroy();
+       // helper.close();
         cursor.close();
+
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        QueryDatabaseTask qt = new QueryDatabaseTask();
+        qt.execute();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getListView().invalidate();
+
     }
 
     @Override
@@ -72,13 +94,12 @@ public class ModelList extends ListActivity {
 
 
 
-
     private class QueryDatabaseTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            helper = new DataBaseHelper(ModelList.this);
+            helper = DataBaseHelper.getInstance(ModelList.this);
             pb.setVisibility(View.VISIBLE);
         }
 
@@ -88,16 +109,17 @@ public class ModelList extends ListActivity {
             pb.setVisibility(View.GONE);
             String[] columns = {DataBaseHelper.NAME, DataBaseHelper.CLASS, DataBaseHelper.METHOD};
             int[] to = {R.id.name, R.id.category, R.id.method};
+
             CursorAdapter adapter = new ModelAdapter(ModelList.this, cursor, 0);
             setListAdapter(adapter);
-
 
         }
 
         @Override
         protected Void doInBackground(Void... params) {
 
-            cursor = helper.getModelData();
+
+            cursor = helper.getPredictorData();
 
             if (cursor.getCount() != 0) {
                 cursor.moveToFirst();

@@ -6,6 +6,8 @@
     android:orientation="horizontal"
     android:weightSum="1.0">
 
+
+
     <LinearLayout
         android:layout_width="0dip"
         android:layout_height="match_parent"
@@ -13,63 +15,60 @@
         android:layout_weight=".65"
         android:orientation="vertical"
         android:weightSum="1">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:textColor="@color/white"
-            android:id="@+id/predictorInfo" />
 
-        <LinearLayout
-           style="@style/readout_cell">
+        <TextView
+            android:id="@+id/title_prompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/regular_text"
+            android:text="Name"
+            android:layout_marginBottom="5dp"/>
+
+        <LinearLayout style="@style/readout_cell"
+            android:layout_weight=".25">
 
             <TextView
                 style="@style/panel_main_label"
 
-                android:text="Accelerometer"
-               />
+                android:text="Accelerometer" />
 
-            <LinearLayout
-                style="@style/panel_values_area">
+            <LinearLayout style="@style/panel_values_area">
 
-                <LinearLayout
-                    style="@style/prompt_row">
+                <LinearLayout style="@style/prompt_row">
 
                     <TextView
                         android:id="@+id/accelXPrompt"
-                        android:text="AccelX"
                         style="@style/panel_textlabel"
-                         />
+                        android:text="AccelX" />
+
                     <TextView
                         android:id="@+id/accelYPrompt"
-                        android:text="AccelY"
                         style="@style/panel_textlabel"
-                        />
+                        android:text="AccelY" />
+
                     <TextView
                         android:id="@+id/accelZPrompt"
-                        android:text="AccelZ"
                         style="@style/panel_textlabel"
-                        />
+                        android:text="AccelZ" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    style = "@style/readout_row">
+                <LinearLayout style="@style/readout_row">
+
                     <TextView
                         android:id="@+id/accelX"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
+
                     <TextView
                         android:id="@+id/accelY"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
+
                     <TextView
                         android:id="@+id/accelZ"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -77,56 +76,51 @@
 
         <!-- new data layout cell -->
 
-        <LinearLayout
-            style="@style/readout_cell">
+        <LinearLayout style="@style/readout_cell"
+            android:layout_weight=".25">
 
             <TextView
                 style="@style/panel_main_label"
 
-                android:text="Gyroscope"
-                />
+                android:text="Gyroscope" />
 
-            <LinearLayout
-                style="@style/panel_values_area">
+            <LinearLayout style="@style/panel_values_area">
 
-                <LinearLayout
-                    style="@style/prompt_row">
+                <LinearLayout style="@style/prompt_row">
 
                     <TextView
 
-                        android:text="GyroX"
                         style="@style/panel_textlabel"
-                        />
+                        android:text="GyroX" />
+
                     <TextView
 
-                        android:text="GyroY"
                         style="@style/panel_textlabel"
-                        />
+                        android:text="GyroY" />
+
                     <TextView
 
-                        android:text="GyroZ"
                         style="@style/panel_textlabel"
-                        />
+                        android:text="GyroZ" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    style = "@style/readout_row">
+                <LinearLayout style="@style/readout_row">
+
                     <TextView
                         android:id="@+id/gyroX"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
+
                     <TextView
                         android:id="@+id/gyroY"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
+
                     <TextView
                         android:id="@+id/gyroZ"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -135,96 +129,102 @@
 
         <!-- new data layout cell -->
 
-        <LinearLayout
-            style="@style/readout_cell">
+        <LinearLayout style="@style/readout_cell"
+            android:layout_weight=".25">
 
             <TextView
                 style="@style/panel_main_label"
-                android:text="Magnetometer"
-                />
+                android:text="Magnetometer" />
 
-            <LinearLayout
-                style="@style/panel_values_area">
+            <LinearLayout style="@style/panel_values_area">
 
-                <LinearLayout
-                    style="@style/prompt_row">
+                <LinearLayout style="@style/prompt_row">
 
                     <TextView
-                        android:text="MagnetX"
                         style="@style/panel_textlabel"
-                        />
+                        android:text="MagnetX" />
+
                     <TextView
-                        android:text="MagnetY"
                         style="@style/panel_textlabel"
-                        />
+                        android:text="MagnetY" />
+
                     <TextView
-                        android:text="MagnetZ"
                         style="@style/panel_textlabel"
-                        />
+                        android:text="MagnetZ" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    style = "@style/readout_row">
+                <LinearLayout style="@style/readout_row">
+
                     <TextView
                         android:id="@+id/magX"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
+
                     <TextView
                         android:id="@+id/magY"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
+
                     <TextView
                         android:id="@+id/magZ"
                         style="@style/panel_textview"
-                        android:text="0.0"
-                        />
+                        android:text="0.0" />
 
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
-
-        <!-- new data layout cell -->
 
         <LinearLayout
-            style="@style/readout_cell">
+            android:layout_width="match_parent"
+            android:layout_height="126dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_weight=".25"
+            android:padding="5dp">
 
             <TextView
-                style="@style/panel_main_label"
+                android:id="@+id/rate_prompt"
 
-                android:text="Speed"
-                />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sample Rate"
+                android:textColor="@color/regular_text" />
 
-            <LinearLayout
-                style="@style/panel_values_area">
+            <SeekBar
+                android:id="@+id/sample_rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-                <LinearLayout
-                    style="@style/prompt_row">
+            <TextView
+                android:id="@+id/sample_rate_display"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="200 ms"
+                android:textColor="@color/regular_text" />
 
-                    <TextView
+            <TextView
+                android:layout_marginTop="10dp"
+                android:id="@+id/delta_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delta Value"
+                android:textColor="@color/regular_text" />
 
-                        android:text="Speed"
-                        style="@style/panel_textlabel"
-                        />
+            <SeekBar
+                android:id="@+id/delta_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/delta_display"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 samplings"
+                android:textColor="@color/regular_text" />
 
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style = "@style/readout_row">
-                    <TextView
-                        android:id="@+id/speedView"
-                        style="@style/panel_textview"
-                        android:text="0.0"
-                        android:layout_weight="1.0"
-                        />
-
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
+
 
     </LinearLayout>
 
@@ -262,13 +262,15 @@
                 android:textOn="@string/labelPos" />
 
             <Button
+                android:id="@+id/save"
                 style="@style/main_button"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:text="Save"
-                android:id="@+id/save"
+                android:layout_weight=".20"
                 android:background="@drawable/button_shape_normal"
-                android:layout_weight=".20" />
+                android:text="Save" />
+
+
 
             <Button
                 android:id="@+id/process"
@@ -277,19 +279,32 @@
                 android:layout_height="0dip"
                 android:layout_weight=".20"
                 android:background="@drawable/button_shape_normal"
-                android:text="Process" />
+                android:text="Process"
+                >
+            </Button>
 
-            <FrameLayout
-                android:id="@+id/predictor_display"
+            <ProgressBar
+
+                style="@style/main_button"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:id="@+id/progressBar"
                 android:layout_weight=".20"
-                android:background="@color/gray"></FrameLayout>
+                android:visibility="gone"
+                />
+
+            <Button
+                android:id="@+id/view_results"
+                style="@style/main_button"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_weight=".20"
+                android:background="@drawable/button_shape_normal_alt"
+                android:visibility="gone"
+                android:text="View Results" />
 
         </LinearLayout>
     </RelativeLayout>
-
-
 
 
 </LinearLayout>

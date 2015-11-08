@@ -4,6 +4,7 @@ package com.detroitteatime.datagatherer;
  * Created by marksargent on 10/18/15.
  */
 public abstract class Predictor {
+    private long id;
     private String category;
     private String name;
     private String model; //JSON string
@@ -75,5 +76,13 @@ public abstract class Predictor {
 
     public void setParameterString(String parameterString) {
         this.parameterString = parameterString;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }
