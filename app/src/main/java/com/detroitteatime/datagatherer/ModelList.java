@@ -29,7 +29,6 @@ public class ModelList extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.class_list);
-        getListView().invalidate();
 
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -54,7 +53,7 @@ public class ModelList extends ListActivity {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(ModelList.this, CategoryEditor.class);
+                Intent intent = new Intent(ModelList.this, CategoryDialog.class);
                 intent.putExtra("id", l);
                 startActivity(intent);
                 return true;
@@ -65,7 +64,7 @@ public class ModelList extends ListActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        helper.close();
+       // helper.close();
         cursor.close();
 
     }
@@ -78,6 +77,12 @@ public class ModelList extends ListActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getListView().invalidate();
+
+    }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -94,7 +99,7 @@ public class ModelList extends ListActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            helper = new DataBaseHelper(ModelList.this);
+            helper = DataBaseHelper.getInstance(ModelList.this);
             pb.setVisibility(View.VISIBLE);
         }
 
@@ -106,9 +111,7 @@ public class ModelList extends ListActivity {
             int[] to = {R.id.name, R.id.category, R.id.method};
 
             CursorAdapter adapter = new ModelAdapter(ModelList.this, cursor, 0);
-            adapter.swapCursor(cursor);
             setListAdapter(adapter);
-
 
         }
 

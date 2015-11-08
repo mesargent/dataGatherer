@@ -9,10 +9,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -20,29 +18,40 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-public class SensorService extends Service implements LocationListener, SensorEventListener {
+public class SensorService extends Service implements SensorEventListener {
+    public static boolean isStarted;
 
     private LocationManager manager;
     private Criteria criteria;
     private String provider;
     private Location location;
-    private int freq = 200000;
 
-    private double lattitude;
-    private double longitude;
-    private double speedGps;
+    private int freq = 500000;
+    private boolean hostingActivityRunning;
+    private List<DataSet> dataArray;
+    private int delta;
+
+    private double lattitude, longitude, speedGps;
+
 
     private String timeStamp;
+    private long lastBroadcastTime;
+
+
 
     private SensorManager sensorManager;
-    private Sensor sensorACC;
-    private Sensor sensorGrav;
-    private Sensor sensorLinear;
-    private Sensor sensorMagnetic;
-    private Sensor sensorGyro;
-    private Sensor sensorOrient;
+
+    private Sensor
+            sensorACC,
+            sensorGrav,
+            sensorLinear,
+            sensorMagnetic,
+            sensorGyro,
+            sensorOrient;
 
     private PowerManager.WakeLock mWakeLock;
     private PowerManager pm;
@@ -57,6 +66,10 @@ public class SensorService extends Service implements LocationListener, SensorEv
     private final IBinder mBinder = new LocalBinder();
 
     DataSet data;
+
+    public void setDelta(int delta) {
+        this.delta = delta;
+    }
 
     public class LocalBinder extends Binder {
         SensorService getService() {
@@ -73,58 +86,26 @@ public class SensorService extends Service implements LocationListener, SensorEv
     public void onCreate() {
         super.onCreate();
         data = new DataSet();
+        dataArray = new ArrayList<>();
 
         s = new SimpleDateFormat(DATE_FORMAT);
         Log.i("My Code", "Service created");
         Toast.makeText(this, "Service created ...", Toast.LENGTH_LONG).show();
-
-        //manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        // Define the criteria how to select the locatioin provider -> use
-        // default
-        //criteria = new Criteria();
-
-//        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-//        criteria.setAltitudeRequired(false);
-//        criteria.setBearingRequired(false);
-//        criteria.setCostAllowed(false);
-//
-//        provider = manager.getBestProvider(criteria, false);
-//        location = manager.getLastKnownLocation(provider);
-
-        // Initialize the location fields
-        if (location != null) {
-            onLocationChanged(location);
-        }
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         setSensors();
 
     }
 
-
-    @Override
-    public void onDestroy() {
-        // TODO Auto-generated method stub
-        super.onDestroy();
-
-            if (manager != null) {
-                manager.removeUpdates(this);
-            }
-
-            disableSensor();
-
-            if (mWakeLock != null && mWakeLock.isHeld())
-                mWakeLock.release();
-
-            if (fWakelock != null && fWakelock.isHeld())
-                fWakelock.release();
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        manager.requestLocationUpdates(provider, 500, 1, this);
+        super.onStartCommand(intent, flags, startId);
         enableSensor();
         Log.i("My Code", "Service started");
+        isStarted = true;
+
+        if (intent != null && intent.hasExtra("sampleRate"))
+            freq = intent.getIntExtra("sampleRate", 500) * 1000;
 
 
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -135,8 +116,27 @@ public class SensorService extends Service implements LocationListener, SensorEv
                         "bbb");
 
         mWakeLock.acquire();
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
+
+
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        isStarted = false;
+
+        disableSensor();
+
+        if (mWakeLock != null && mWakeLock.isHeld())
+            mWakeLock.release();
+
+        if (fWakelock != null && fWakelock.isHeld())
+            fWakelock.release();
+    }
+
+
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -146,6 +146,10 @@ public class SensorService extends Service implements LocationListener, SensorEv
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        long time = System.currentTimeMillis();
+        //only broadcast if freq amount time has passed; android doesn't always respect this
+        //in getting sensor updates
+
         Sensor source = event.sensor;
 
         if (source.equals(sensorACC)) {
@@ -192,48 +196,35 @@ public class SensorService extends Service implements LocationListener, SensorEv
         //Log.i("My Code", "Value positive: " + data.isPositive());
         timeStamp = s.format(new Date());
 
-        Intent localIntent = new Intent(Constants.BROADCAST_SENSOR_DATA).putExtra(Constants.DATA, data);
-        LocalBroadcastManager.getInstance(SensorService.this).sendBroadcast(localIntent);
-    }
+        if (time - lastBroadcastTime >= freq / 1000 && hostingActivityRunning) {
 
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.i("My Code", "Location changed ");
-        if (location != null) {
+            if(delta > dataArray.size()){
+                data.setD_accelX(data.getAccelX() - getDeltaDataSet(delta, dataArray).getAccelX());
+                data.setD_accelY(data.getAccelY() - getDeltaDataSet(delta, dataArray).getAccelY());
+                data.setD_accelZ(data.getAccelZ() - getDeltaDataSet(delta, dataArray).getAccelZ());
 
-            lattitude = location.getLatitude();
-            longitude = location.getLongitude();
+                data.setD_gyroX(data.getGyroX() - getDeltaDataSet(delta, dataArray).getGyroX());
+                data.setD_gyroY(data.getGyroY() - getDeltaDataSet(delta, dataArray).getGyroY());
+                data.setD_gyroZ(data.getGyroZ() - getDeltaDataSet(delta, dataArray).getGyroZ());
 
+                data.setD_magX(data.getMagX() - getDeltaDataSet(delta, dataArray).getMagX());
+                data.setD_magY(data.getMagY() - getDeltaDataSet(delta, dataArray).getMagY());
+                data.setD_magZ(data.getMagZ() - getDeltaDataSet(delta, dataArray).getMagZ());
 
-            if (location.hasSpeed())
-                speedGps = location.getSpeed();
-            else
-                speedGps = -1000;
+            }
+
+            dataArray.add(data);
+            lastBroadcastTime = time;
+            Intent localIntent = new Intent(Constants.BROADCAST_SENSOR_DATA).putExtra(Constants.DATA, data);
+            LocalBroadcastManager.getInstance(SensorService.this).sendBroadcast(localIntent);
 
         }
 
-        timeStamp = s.format(new Date());
-
     }
 
-    @Override
-    public void onProviderDisabled(String provider) {
-        // TODO Auto-generated method stub
-
+    public DataSet getDeltaDataSet(int delta, List<DataSet> dataArray){
+        return dataArray.get(dataArray.size() - delta);
     }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        // TODO Auto-generated method stub
-
-    }
-
 
     public void enableSensor() {
         sensorManager.registerListener(this, sensorACC, freq);
@@ -302,5 +293,36 @@ public class SensorService extends Service implements LocationListener, SensorEv
 
     }
 
+    public int getFreq() {
+        return freq;
+    }
+
+    public List<DataSet> getDataArray() {
+        return dataArray;
+    }
+
+    public void setDataArray(List<DataSet> dataArray) {
+        this.dataArray = dataArray;
+    }
+
+    public void setFreq(int freq) {
+        this.freq = freq*1000;
+    }
+
+    public static boolean isStarted() {
+        return isStarted;
+    }
+
+    public static void setIsStarted(boolean isStarted) {
+        SensorService.isStarted = isStarted;
+    }
+
+    public boolean isHostingActivityRunning() {
+        return hostingActivityRunning;
+    }
+
+    public void setHostingActivityRunning(boolean hostingActivityRunning) {
+        this.hostingActivityRunning = hostingActivityRunning;
+    }
 
 }

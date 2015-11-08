@@ -3,11 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
+
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
+        android:orientation="vertical">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -19,12 +20,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_marginBottom="2dp"
                 android:background="@color/black"
                 android:hint="Name"
                 android:inputType="text"
-                android:textSize="30sp"
-                android:layout_marginBottom="2dp"
-                android:textColor="@color/regular_text"/>
+                android:textColor="@color/regular_text"
+                android:textColorHint="@color/regular_text"
+                android:textSize="30sp" />
 
             <EditText
                 android:id="@+id/category"
@@ -36,19 +38,30 @@
                 android:background="@color/black"
                 android:hint="Category"
                 android:inputType="text"
-                android:textSize="30sp"
-                android:textColor="@color/regular_text"/>
+                android:textColor="@color/regular_text"
+                android:textColorHint="@color/regular_text"
+                android:textSize="30sp" />
 
 
             <Button
                 android:id="@+id/enter_category"
                 style="@style/main_button"
-                android:layout_width="match_parent"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentLeft="true"
                 android:background="@drawable/button_shape_normal"
                 android:text="@string/enter" />
+
+            <Button
+                android:id="@+id/delete_category"
+                style="@style/main_button"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_toRightOf="@id/enter_category"
+                android:background="@drawable/button_shape_normal"
+                android:text="Delete" />
 
             <RadioGroup
                 android:id="@+id/method_group"
@@ -106,116 +119,222 @@
                     android:id="@+id/cp01"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="0.01"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                    android:textColor="@color/regular_text" />
 
                 <CheckBox
                     android:id="@+id/cp1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="0.1"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                    android:textColor="@color/regular_text" />
 
                 <CheckBox
                     android:id="@+id/c1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="1"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                    android:textColor="@color/regular_text" />
 
                 <CheckBox
                     android:id="@+id/c10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="10"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                    android:textColor="@color/regular_text" />
 
                 <CheckBox
                     android:id="@+id/c100"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="100"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                    android:textColor="@color/regular_text" />
 
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout_height="350dp"
                 android:layout_below="@id/method_group"
+                android:layout_marginBottom="10dp"
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@id/cv_group"
                 android:background="@color/panel_background"
                 android:orientation="vertical"
-                android:padding="5dp"
-                android:layout_marginBottom="10dp">
+                android:padding="5dp">
 
-                <TextView
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="Select Sensors"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/regular_text" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
+                        <TextView
 
-                <CheckBox
-                    android:id="@+id/x_accel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="x accel"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
-
-                <CheckBox
-                    android:id="@+id/y_accel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="y accel"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
-
-                <CheckBox
-                    android:id="@+id/z_accel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="z accel"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:text="Select Sensors"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:textColor="@color/regular_text" />
 
 
-                <CheckBox
-                    android:id="@+id/x_gyro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="x gyro"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                        <CheckBox
+                            android:id="@+id/x_accel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="x accel"
+                            android:textColor="@color/regular_text" />
 
-                <CheckBox
-                    android:id="@+id/y_gyro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="y gyro"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                        <CheckBox
+                            android:id="@+id/y_accel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="y accel"
+                            android:textColor="@color/regular_text" />
 
-                <CheckBox
-                    android:id="@+id/z_gyro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="z gyro"
-                    android:textColor="@color/regular_text"
-                    android:checked="true"/>
+                        <CheckBox
+                            android:id="@+id/z_accel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="z accel"
+                            android:textColor="@color/regular_text" />
 
+                        <CheckBox
+                            android:id="@+id/x_gyro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="x gyro"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/y_gyro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="y gyro"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/z_gyro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="z gyro"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/x_mag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="x mag"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/y_mag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="y mag"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/z_mag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="z mag"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dx_accel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dx accel"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dy_accel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dy accel"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dz_accel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dz accel"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dx_gyro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dx gyro"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dy_gyro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dy gyro"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dz_gyro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dz gyro"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dx_mag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dx mag"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dy_mag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dy mag"
+                            android:textColor="@color/regular_text" />
+
+                        <CheckBox
+                            android:id="@+id/dz_mag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="dz mag"
+                            android:textColor="@color/regular_text" />
+
+                    </LinearLayout>
+                </ScrollView>
 
             </LinearLayout>
 
@@ -238,11 +357,12 @@
                 android:layout_alignRight="@+id/linearLayout"
                 android:layout_alignStart="@+id/linearLayout"
                 android:layout_below="@+id/linearLayout"
-                android:ems="10"
-                android:hint="# of PC to use"
-                android:inputType="number"
                 android:background="@color/black"
-                android:textColor="@color/regular_text"/>
+                android:ems="10"
+                android:hint="# of PCs to use"
+                android:textColorHint="@color/regular_text"
+                android:inputType="number"
+                android:textColor="@color/regular_text" />
 
         </RelativeLayout>
 

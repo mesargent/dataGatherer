@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class DataAccess {
-    public static final String dir = "SpeedData";
+    public static final String dir = "SensorData";
 
     public static JSONArray cursorToJSON(Cursor cursor) {
         JSONArray resultSet = new JSONArray();
@@ -46,8 +46,7 @@ public class DataAccess {
 
     public static void saveToCSVFile(Context context) {
 
-        DataBaseHelper helper = new DataBaseHelper(context);
-        helper.open(DataBaseHelper.READABLE);
+        DataBaseHelper helper = DataBaseHelper.getInstance(context);
 
         Cursor cursor = helper.getData();
         BufferedWriter writer = null;
@@ -224,7 +223,7 @@ public class DataAccess {
         }
 
         cursor.close();
-        helper.close();
+
 
     }
 
@@ -275,13 +274,5 @@ public class DataAccess {
         return obj;
     }
 
-//    /**
-//     * Determines if a key/value pair is in
-//     *
-//     */
-//
-//
-//    public static boolean valueExists(String key, String value){
-//
-//    }
+
 }
