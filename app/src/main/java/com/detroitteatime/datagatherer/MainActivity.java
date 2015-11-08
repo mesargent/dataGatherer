@@ -357,6 +357,7 @@ public class MainActivity extends ActionBarActivity {
             super.onPreExecute();
             process.setVisibility(View.GONE);
             progress.setVisibility(View.VISIBLE);
+            results.setVisibility(View.GONE);
 
         }
 
