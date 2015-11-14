@@ -245,7 +245,7 @@ public class CategoryDialog extends Activity {
                 if (dyAcc.isChecked()) {
                     sensors.add(DataBaseHelper.D_ACCELY);
                 }
-                if (zAcc.isChecked()) {
+                if (dzAcc.isChecked()) {
                     sensors.add(DataBaseHelper.D_ACCELZ);
                 }
 

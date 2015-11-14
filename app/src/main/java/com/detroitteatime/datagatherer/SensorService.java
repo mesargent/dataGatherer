@@ -25,6 +25,16 @@ import java.util.List;
 public class SensorService extends Service implements SensorEventListener {
     public static boolean isStarted;
 
+    public static boolean isPositive() {
+        return positive;
+    }
+
+    public static void setPositive(boolean positive) {
+        SensorService.positive = positive;
+    }
+
+    public static boolean positive;
+
     private LocationManager manager;
     private Criteria criteria;
     private String provider;
@@ -212,9 +222,15 @@ public class SensorService extends Service implements SensorEventListener {
                 data.setD_magZ(data.getMagZ() - getDeltaDataSet(delta, dataArray).getMagZ());
 
             }
+            data.setPositive(positive);
 
-            dataArray.add(data);
+            try {
+                dataArray.add((DataSet)data.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
             lastBroadcastTime = time;
+            //Log.i("My Code", "Sensor data from service "+ data.toString());
             Intent localIntent = new Intent(Constants.BROADCAST_SENSOR_DATA).putExtra(Constants.DATA, data);
             LocalBroadcastManager.getInstance(SensorService.this).sendBroadcast(localIntent);
 

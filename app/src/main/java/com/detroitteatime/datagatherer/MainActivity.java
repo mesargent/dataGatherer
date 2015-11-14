@@ -48,7 +48,7 @@ public class MainActivity extends ActionBarActivity {
 
     private ToggleButton start;
     private ToggleButton label;
-    private Button process, save, results;
+    private Button process, save, results, cancel;
     private ProgressBar progress;
 
     private String format = "%.5f";
@@ -72,6 +72,7 @@ public class MainActivity extends ActionBarActivity {
     private int samplingRate = 200;
     private int delta;
 
+    SendJSONTask task;
 
 
     @SuppressWarnings("deprecation")
@@ -209,8 +210,10 @@ public class MainActivity extends ActionBarActivity {
                     Toast.makeText(buttonView.getContext(), "No running services", Toast.LENGTH_LONG).show();
                 else if (isChecked) {
                     positive = true;
+                    mBoundService.setPositive(true);
                 } else {
                     positive = false;
+                    mBoundService.setPositive(false);
                 }
             }
         });
@@ -222,6 +225,7 @@ public class MainActivity extends ActionBarActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        dataArray = mBoundService.getDataArray();
                         dbHelper = (dbHelper == null) ? DataBaseHelper.getInstance(MainActivity.this) : dbHelper;
                         dbHelper.insertDataArray(dataArray);
                         dataArray.clear();
@@ -235,7 +239,7 @@ public class MainActivity extends ActionBarActivity {
         process.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SendJSONTask task = new SendJSONTask();
+                task = new SendJSONTask();
                 task.execute();
 
             }
@@ -256,6 +260,18 @@ public class MainActivity extends ActionBarActivity {
         if(predictor.getModel()!=null){
             results.setVisibility(View.VISIBLE);
         }
+
+        cancel = (Button) findViewById(R.id.cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                task.cancel(true);
+                process.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
+                results.setVisibility(View.GONE);
+                cancel.setVisibility(View.GONE);
+            }
+        });
 
     }
 
@@ -312,7 +328,7 @@ public class MainActivity extends ActionBarActivity {
             mBoundService = ((SensorService.LocalBinder) service).getService();
             mBoundService.setFreq(samplingRate);
             mBoundService.setHostingActivityRunning(true);
-            dataArray = mBoundService.getDataArray();
+
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -358,6 +374,7 @@ public class MainActivity extends ActionBarActivity {
             process.setVisibility(View.GONE);
             progress.setVisibility(View.VISIBLE);
             results.setVisibility(View.GONE);
+            cancel.setVisibility(View.VISIBLE);
 
         }
 
@@ -367,6 +384,7 @@ public class MainActivity extends ActionBarActivity {
             process.setVisibility(View.VISIBLE);
             progress.setVisibility(View.GONE);
             results.setVisibility(View.VISIBLE);
+            cancel.setVisibility(View.GONE);
         }
 
         @Override
@@ -396,6 +414,7 @@ public class MainActivity extends ActionBarActivity {
             HttpClient httpClient = new DefaultHttpClient();
             HttpContext httpContext = new BasicHttpContext();
 
+            //HttpPost httpPost = new HttpPost("http://162.243.28.75/classify/logistic_regression");
             HttpPost httpPost = new HttpPost("http://192.168.1.4:8000/classify/logistic_regression");
 
             try {
@@ -410,7 +429,7 @@ public class MainActivity extends ActionBarActivity {
                 HttpEntity entity = response.getEntity();
 
                 String jsonString = EntityUtils.toString(entity); //if response in JSON format
-                Log.i("My Code", "returned: " + jsonString);
+
                 predictor.setModel(jsonString);
                 helper.editPredictor(predictor);
 
