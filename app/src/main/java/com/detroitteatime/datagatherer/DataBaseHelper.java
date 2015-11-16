@@ -135,7 +135,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     ORIENTY + " REAL, " +
                     ORIENTZ + " REAL, " +
 
-                    TIME + " TEXT, " +
+                    TIME + " REAL, " +
                     POSITIVE + " BOOLEAN);");
 
             db.execSQL("CREATE TABLE " + MODEL_TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -193,7 +193,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 if (e.getMessage() != null) Log.e("My Code", e.getMessage());
             }
         }
-
     }
 
     public Cursor getData() {

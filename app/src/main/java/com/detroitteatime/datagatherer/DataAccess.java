@@ -37,6 +37,7 @@ public class DataAccess {
                 }
             }
             resultSet.put(rowObject);
+            Log.i("My Code", "data row: " + rowObject.toString());
             cursor.moveToNext();
         }
 

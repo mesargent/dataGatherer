@@ -3,7 +3,7 @@ package com.detroitteatime.datagatherer;
 
 import java.io.Serializable;
 
-public class DataSet implements Serializable{
+public class DataSet implements Serializable, Cloneable {
     private double lat;
     private double lng;
     private double speedGPS;
@@ -27,6 +27,57 @@ public class DataSet implements Serializable{
     private double d_magX;
     private double d_magY;
     private double d_magZ;
+    private double gyroX;
+    private double gyroY;
+    private double gyroZ;
+    private double d_gyroX;
+    private double d_gyroY;
+    private double d_gyroZ;
+    private double orientX;
+    private double orientY;
+    private double orientZ;
+    private boolean positive;
+
+    @Override
+    public String toString() {
+        return "  lat; " + getLat() +
+                "     lng; " + getLng() +
+                "     speedGPS; " + getSpeedGPS() +
+                "     speedACC; " + getSpeedACC() +
+                "     time; " + getTime() +
+                "     accelX; " + getAccelX() +
+                "     accelY; " + getAccelY() +
+                "     accelZ; " + getAccelZ() +
+                "     d_accelX; " + getD_accelX() +
+                "     d_accelY; " + getD_accelY() +
+                "     d_accelZ; " + getD_accelZ() +
+                "     linX; " + getLinX() +
+                "     linY; " + getLinY() +
+                "     linZ; " + getLinZ() +
+                "     gravX; " + getGravX() +
+                "     gravY; " + getGravY() +
+                "     gravZ; " + getGravZ() +
+                "     magX; " + getMagX() +
+                "     magY; " + getMagY() +
+                "     magZ; " + getMagZ() +
+                "     d_magX; " + getD_magX() +
+                "     d_magY; " + getD_magY() +
+                "     d_magZ; " + getD_magZ() +
+                "     gyroX; " + getGyroX() +
+                "     gyroY; " + getGyroY() +
+                "     gyroZ; " + getGyroZ() +
+                "     d_gyroX; " + getD_gyroX() +
+                "     d_gyroY; " + getD_gyroY() +
+                "     d_gyroZ; " + getD_gyroZ() +
+                "     orientX; " + getOrientX() +
+                "     orientY; " + getOrientY() +
+                "     orientZ; " + getOrientZ() +
+                "    positive; " + isPositive();
+    }
+
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     public double getD_accelX() {
         return d_accelX;
@@ -99,18 +150,6 @@ public class DataSet implements Serializable{
     public void setD_gyroZ(double d_gyroZ) {
         this.d_gyroZ = d_gyroZ;
     }
-
-    private double gyroX;
-    private double gyroY;
-    private double gyroZ;
-    private double d_gyroX;
-    private double d_gyroY;
-    private double d_gyroZ;
-    private double orientX;
-    private double orientY;
-    private double orientZ;
-    private boolean positive;
-
 
 
     public double getLat() {
