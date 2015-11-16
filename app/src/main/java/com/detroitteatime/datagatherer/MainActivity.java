@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,7 +26,6 @@ import android.widget.ToggleButton;
 
 import com.example.datagatherer.R;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -183,6 +181,7 @@ public class MainActivity extends ActionBarActivity {
                     bindService(new Intent(MainActivity.this,
                             SensorService.class), mConnection, BIND_AUTO_CREATE);
                     mBound = true;
+                    mBoundService.setPositive(positive);
 
                     dataArray = new ArrayList<>();
 
@@ -206,15 +205,10 @@ public class MainActivity extends ActionBarActivity {
         label.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                positive = (isChecked)?true:false;
                 if (mBoundService == null)
                     Toast.makeText(buttonView.getContext(), "No running services", Toast.LENGTH_LONG).show();
-                else if (isChecked) {
-                    positive = true;
-                    mBoundService.setPositive(true);
-                } else {
-                    positive = false;
-                    mBoundService.setPositive(false);
-                }
+                else mBoundService.setPositive(positive);
             }
         });
 
@@ -329,6 +323,7 @@ public class MainActivity extends ActionBarActivity {
             mBoundService.setFreq(samplingRate);
             mBoundService.setHostingActivityRunning(true);
 
+
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -344,9 +339,8 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             DataSet data = (DataSet) intent.getSerializableExtra(Constants.DATA);
-            DataSet data2 = SerializationUtils.clone(data);
-            data.setPositive(positive);
-            Log.i("My Code", "Receieved value positive: " + data.isPositive());
+
+           // Log.i("My Code", "Receieved value positive: " + data.isPositive());
 
             xAcc.setText(String.format(format, data.getAccelX()));
             yAcc.setText(String.format(format, data.getAccelY()));
@@ -360,7 +354,7 @@ public class MainActivity extends ActionBarActivity {
             yMag.setText(String.format(format, data.getMagY()));
             zMag.setText(String.format(format, data.getMagZ()));
 
-            Log.i("My Code", "Received Object ref: " + data.toString());
+           // Log.i("My Code", "Received Object ref: " + data.toString());
 
         }
     }

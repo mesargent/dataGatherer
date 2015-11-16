@@ -24,15 +24,6 @@ import java.util.List;
 
 public class SensorService extends Service implements SensorEventListener {
     public static boolean isStarted;
-
-    public static boolean isPositive() {
-        return positive;
-    }
-
-    public static void setPositive(boolean positive) {
-        SensorService.positive = positive;
-    }
-
     public static boolean positive;
 
     private LocationManager manager;
@@ -47,11 +38,8 @@ public class SensorService extends Service implements SensorEventListener {
 
     private double lattitude, longitude, speedGps;
 
-
     private String timeStamp;
     private long lastBroadcastTime;
-
-
 
     private SensorManager sensorManager;
 
@@ -77,9 +65,7 @@ public class SensorService extends Service implements SensorEventListener {
 
     DataSet data;
 
-    public void setDelta(int delta) {
-        this.delta = delta;
-    }
+
 
     public class LocalBinder extends Binder {
         SensorService getService() {
@@ -204,7 +190,7 @@ public class SensorService extends Service implements SensorEventListener {
         data.setLng(longitude);
 
         //Log.i("My Code", "Value positive: " + data.isPositive());
-        timeStamp = s.format(new Date());
+        timeStamp = s.format(new Date().getTime());
 
         if (time - lastBroadcastTime >= freq / 1000 && hostingActivityRunning) {
 
@@ -230,7 +216,7 @@ public class SensorService extends Service implements SensorEventListener {
                 e.printStackTrace();
             }
             lastBroadcastTime = time;
-            //Log.i("My Code", "Sensor data from service "+ data.toString());
+            Log.i("My Code", "Sensor data from service "+ data.toString());
             Intent localIntent = new Intent(Constants.BROADCAST_SENSOR_DATA).putExtra(Constants.DATA, data);
             LocalBroadcastManager.getInstance(SensorService.this).sendBroadcast(localIntent);
 
@@ -313,6 +299,15 @@ public class SensorService extends Service implements SensorEventListener {
         return freq;
     }
 
+
+    public static boolean isPositive() {
+        return positive;
+    }
+
+    public static void setPositive(boolean positive) {
+        SensorService.positive = positive;
+    }
+
     public List<DataSet> getDataArray() {
         return dataArray;
     }
@@ -339,6 +334,9 @@ public class SensorService extends Service implements SensorEventListener {
 
     public void setHostingActivityRunning(boolean hostingActivityRunning) {
         this.hostingActivityRunning = hostingActivityRunning;
+    }
+    public void setDelta(int delta) {
+        this.delta = delta;
     }
 
 }
