@@ -45,6 +45,19 @@ public class DataAccess {
         return resultSet;
     }
 
+    public static File makeClassifierParametersFile(Context context, String params, File file) {
+        file.mkdirs();
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(file));
+            writer.write(params);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
     public static File saveToCSVFile(Context context) {
 
         DataBaseHelper helper = DataBaseHelper.getInstance(context);

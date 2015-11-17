@@ -27,6 +27,8 @@ public class SendDialog extends Activity {
     private Button send, cancel, delete;
     private int task = 0;
     private ProgressBar progress;
+    private String filename;
+    private long predictorNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,10 @@ public class SendDialog extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.send);
         progress = (ProgressBar) findViewById(R.id.progressBar);
+
+        Intent intent = getIntent();
+        filename = intent.getStringExtra("model_file");
+        predictorNumber = intent.getLongExtra("predictor_id", 0);
 
         send = (Button) findViewById(R.id.send);
         send.getBackground().setColorFilter(Color.parseColor("#663033"), PorterDuff.Mode.MULTIPLY);
@@ -43,7 +49,7 @@ public class SendDialog extends Activity {
         cancel.getBackground().setColorFilter(Color.parseColor("#663033"), PorterDuff.Mode.MULTIPLY);
 
 
-        File myDir = new File(Environment.getExternalStorageDirectory() + "/Caffeine_Counter_History/Caffeine_History.csv");
+        File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictorNumber+ "/" + filename + ".txt");
         if (!myDir.exists()) {
             delete.setVisibility(View.GONE);
         }
@@ -55,12 +61,12 @@ public class SendDialog extends Activity {
 
                 final Intent emailIntent = new Intent(Intent.ACTION_SEND);
 
-                String subjectString = "My Sensor Data";
+                String subjectString = "Classifier Parameters for " + filename;
 
                 /* Fill it with Data */
                 emailIntent.setType("plain/text");
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, subjectString);
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "Attached is my sensor data.");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Attached is your classifier parameters.");
                 emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), DataAccess.dir)));
                 /* Send it off to the Activity-Chooser */
                 startActivity(Intent.createChooser(emailIntent, "Send mail..."));

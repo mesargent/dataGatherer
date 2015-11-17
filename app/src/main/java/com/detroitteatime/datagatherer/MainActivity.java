@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -39,6 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -306,11 +308,16 @@ public class MainActivity extends ActionBarActivity {
             case R.id.clear_db:
                 dbHelper = DataBaseHelper.getInstance(this);
                 dbHelper.getWritableDatabase().execSQL("delete from " + DataBaseHelper.SENSOR_TABLE_NAME);
-
                 return true;
             case R.id.change_predictor:
                 Intent intent = new Intent(MainActivity.this, ModelList.class);
                 startActivity(intent);
+                return true;
+            case R.id.send_params:
+                Intent intent1 = new Intent(MainActivity.this, SendDialog.class);
+                intent1.putExtra("model_file", predictor.getName());
+                intent1.putExtra("model_file", predictor.getId());
+                startActivity(intent1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -426,6 +433,9 @@ public class MainActivity extends ActionBarActivity {
 
                 predictor.setModel(jsonString);
                 helper.editPredictor(predictor);
+
+                File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".txt");
+                DataAccess.makeClassifierParametersFile(MainActivity.this, jsonString, myDir);
 
 
             } catch (Exception e) {

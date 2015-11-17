@@ -23,4 +23,9 @@
         android:orderInCategory="100"
         android:title="@string/clear_db"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/send_params"
+        android:orderInCategory="100"
+        android:title="Send Params"
+        app:showAsAction="never" />
 </menu>
