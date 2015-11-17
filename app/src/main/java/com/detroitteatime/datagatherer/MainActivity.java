@@ -42,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +91,6 @@ public class MainActivity extends ActionBarActivity {
 
         }
 
-
         IntentFilter mStatusIntentFilter = new IntentFilter(
                 Constants.BROADCAST_SENSOR_DATA);
         receiver = new ResponseReceiver();
@@ -131,7 +131,7 @@ public class MainActivity extends ActionBarActivity {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 delta = i;
                 deltaVal.setText(String.valueOf(i) + " readings");
-                mBoundService.setDelta(i);
+                if(mBoundService!=null) mBoundService.setDelta(delta);
             }
 
             @Override
@@ -301,25 +301,53 @@ public class MainActivity extends ActionBarActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.save_csv:
-                DataAccess.saveToCSVFile(this);
+                File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".csv");
+                DataAccess.saveToCSVFile(this, myDir);
                 return true;
+
+            case R.id.load_csv:
+                File file = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".csv");
+                if(file.exists()){
+                    dbHelper = DataBaseHelper.getInstance(this);
+                    dbHelper.getWritableDatabase().execSQL("delete from " + DataBaseHelper.SENSOR_TABLE_NAME);
+                    try {
+                        DataAccess.loadCSV(this, file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(this, "CSV file doesn't exist", Toast.LENGTH_LONG).show();
+                }
+
+                return true;
+
             case R.id.delete_csv:
-                DataAccess.deleteCSV();
+                File csvFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".csv");
+                DataAccess.deleteRecursive(csvFile);
                 return true;
+
             case R.id.clear_db:
                 dbHelper = DataBaseHelper.getInstance(this);
                 dbHelper.getWritableDatabase().execSQL("delete from " + DataBaseHelper.SENSOR_TABLE_NAME);
                 return true;
+
             case R.id.change_predictor:
                 Intent intent = new Intent(MainActivity.this, ModelList.class);
                 startActivity(intent);
                 return true;
+
             case R.id.send_params:
                 Intent intent1 = new Intent(MainActivity.this, SendDialog.class);
                 intent1.putExtra("model_file", predictor.getName());
                 intent1.putExtra("model_file_id", predictor.getId());
                 startActivity(intent1);
                 return true;
+
+            case R.id.delete_params:
+                File paramFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".txt");
+                DataAccess.deleteRecursive(paramFile);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -329,6 +357,7 @@ public class MainActivity extends ActionBarActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mBoundService = ((SensorService.LocalBinder) service).getService();
             mBoundService.setFreq(samplingRate);
+            mBoundService.setDelta(delta);
             mBoundService.setHostingActivityRunning(true);
 
 
@@ -441,9 +470,6 @@ public class MainActivity extends ActionBarActivity {
                 }else{
                     Log.e("My Code", "storage not available");
                 }
-
-
-
 
             } catch (Exception e) {
                 e.printStackTrace();

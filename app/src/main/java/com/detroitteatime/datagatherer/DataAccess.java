@@ -9,13 +9,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class DataAccess {
     public static final String dir = "SensorData";
@@ -52,7 +52,7 @@ public class DataAccess {
         ///storage/emulated/0/my_classifier_files/1/test1.txt
         BufferedWriter writer = null;
         try {
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.createNewFile();
             }
             writer = new BufferedWriter(new FileWriter(file));
@@ -83,26 +83,75 @@ public class DataAccess {
         return false;
     }
 
-    public static File saveToCSVFile(Context context) {
+    public static void loadCSV(Context context, File file) throws IOException {
+        DataBaseHelper helper = DataBaseHelper.getInstance(context);
+
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ",";
+        DataSet ds = new DataSet();
+
+            br = new BufferedReader(new FileReader(file));
+            br.readLine(); //consume header row
+            while ((line = br.readLine()) != null) {
+
+                // use comma as separator
+                String[] dataset = line.split(cvsSplitBy);
+                ds.setAccelX(Double.parseDouble(dataset[1]));
+                ds.setAccelY(Double.parseDouble(dataset[2]));
+                ds.setAccelZ(Double.parseDouble(dataset[3]));
+
+                ds.setLinX(Double.parseDouble(dataset[4]));
+                ds.setLinY(Double.parseDouble(dataset[5]));
+                ds.setLinZ(Double.parseDouble(dataset[6]));
+
+                ds.setGravX(Double.parseDouble(dataset[7]));
+                ds.setGravY(Double.parseDouble(dataset[8]));
+                ds.setGravZ(Double.parseDouble(dataset[9]));
+
+                ds.setMagX(Double.parseDouble(dataset[10]));
+                ds.setMagY(Double.parseDouble(dataset[11]));
+                ds.setMagZ(Double.parseDouble(dataset[12]));
+
+                ds.setGyroX(Double.parseDouble(dataset[13]));
+                ds.setGyroY(Double.parseDouble(dataset[14]));
+                ds.setGyroZ(Double.parseDouble(dataset[15]));
+
+                ds.setOrientX(Double.parseDouble(dataset[16]));
+                ds.setOrientY(Double.parseDouble(dataset[17]));
+                ds.setOrientZ(Double.parseDouble(dataset[18]));
+
+                ds.setD_accelX(Double.parseDouble(dataset[19]));
+                ds.setD_accelY(Double.parseDouble(dataset[20]));
+                ds.setD_accelZ(Double.parseDouble(dataset[21]));
+
+                ds.setD_magX(Double.parseDouble(dataset[22]));
+                ds.setD_magY(Double.parseDouble(dataset[23]));
+                ds.setD_magZ(Double.parseDouble(dataset[24]));
+
+                ds.setD_gyroX(Double.parseDouble(dataset[25]));
+                ds.setD_gyroY(Double.parseDouble(dataset[26]));
+                ds.setD_gyroZ(Double.parseDouble(dataset[27]));
+
+                helper.insertData(ds);
+            }
+
+    }
+
+
+    public static File saveToCSVFile(Context context, File file) {
+        file.getParentFile().mkdirs();
+
 
         DataBaseHelper helper = DataBaseHelper.getInstance(context);
 
         Cursor cursor = helper.getData();
         BufferedWriter writer = null;
 
-        String fileName = new Date().getTime() + ".csv";
-
-        File myDir = new File(Environment.getExternalStorageDirectory(), dir);
-        myDir.mkdirs();
-
-        File file = new File(myDir.getAbsolutePath(), fileName);
-
         try {
             writer = new BufferedWriter(new FileWriter(file));
 
             writer.write("Id");
-            writer.write(",");
-            writer.write("Speed");
             writer.write(",");
 
             writer.write("AccX");
@@ -147,18 +196,34 @@ public class DataAccess {
             writer.write("OrientationZ");
             writer.write(",");
 
-            writer.write("Lat");
+            writer.write("D_AccX");
             writer.write(",");
-            writer.write("Long");
+            writer.write("D_AccY");
             writer.write(",");
-            writer.write("Time");
+            writer.write("D_AccZ");
             writer.write(",");
+
+            writer.write("D_MagneticX");
+            writer.write(",");
+            writer.write("D_MagneticY");
+            writer.write(",");
+            writer.write("D_MagneticZ");
+            writer.write(",");
+
+            writer.write("D_GyroscopeX");
+            writer.write(",");
+            writer.write("D_GyroscopeY");
+            writer.write(",");
+            writer.write("D_GyroscopeZ");
+            writer.write(",");
+
+
             writer.write("");
             writer.write('\n');
 
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 long id = cursor.getLong(cursor.getColumnIndex("_id"));
-                String speed = cursor.getString(cursor.getColumnIndex(DataBaseHelper.SPEED_GPS));
+
                 String ax = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ACCELX));
                 String ay = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ACCELY));
                 String az = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ACCELZ));
@@ -183,8 +248,19 @@ public class DataAccess {
                 String oy = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ORIENTY));
                 String oz = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ORIENTZ));
 
-                String lat = cursor.getString(cursor.getColumnIndex(DataBaseHelper.LATTITUDE));
-                String lng = cursor.getString(cursor.getColumnIndex(DataBaseHelper.LONGITUDE));
+                String dax = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_ACCELX));
+                String day = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_ACCELY));
+                String daz = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_ACCELZ));
+
+                String dmx = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_MAGNETICX));
+                String dmy = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_MAGNETICY));
+                String dmz = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_MAGNETICZ));
+
+                String dgyrx = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_GYROX));
+                String dgyry = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_GYROY));
+                String dgyrz = cursor.getString(cursor.getColumnIndex(DataBaseHelper.D_GYROZ));
+
+
                 String time = cursor.getString(cursor.getColumnIndex(DataBaseHelper.TIME));
                 String positive = cursor.getString(cursor.getColumnIndex(DataBaseHelper.POSITIVE));
 
@@ -194,8 +270,6 @@ public class DataAccess {
 
 
                 writer.write(String.valueOf(id));
-                writer.write(",");
-                writer.write(speed);
                 writer.write(",");
 
                 writer.write(ax);
@@ -233,6 +307,7 @@ public class DataAccess {
                 writer.write(gyrz);
                 writer.write(",");
 
+
                 writer.write(ox);
                 writer.write(",");
                 writer.write(oy);
@@ -240,10 +315,30 @@ public class DataAccess {
                 writer.write(oz);
                 writer.write(",");
 
-                writer.write(lat);
+                writer.write(dax);
                 writer.write(",");
-                writer.write(lng);
+                writer.write(day);
                 writer.write(",");
+                writer.write(daz);
+                writer.write(",");
+
+
+                writer.write(dmx);
+                writer.write(",");
+                writer.write(dmy);
+                writer.write(",");
+                writer.write(dmz);
+                writer.write(",");
+
+
+                writer.write(dgyrx);
+                writer.write(",");
+                writer.write(dgyry);
+                writer.write(",");
+                writer.write(dgyrz);
+                writer.write(",");
+
+
                 writer.write(time);
                 writer.write(",");
                 writer.write(positive);
@@ -262,17 +357,9 @@ public class DataAccess {
 
         cursor.close();
 
-
         return file;
     }
 
-    public static void deleteCSV() {
-
-        File myDir = new File(Environment.getExternalStorageDirectory() + "/" + dir);
-
-        deleteRecursive(myDir);
-
-    }
 
 
     public static void deleteRecursive(File fileOrDirectory) {
@@ -286,20 +373,20 @@ public class DataAccess {
     }
 
     public static JSONObject makeParamJSON(ArrayList<Double> cValues, ArrayList<String> sensors,
-                                           boolean usePCA, int noPc){
-            JSONObject obj = new JSONObject();
-            JSONArray cArray = new JSONArray();
-            JSONArray sArray = new JSONArray();
+                                           boolean usePCA, int noPc) {
+        JSONObject obj = new JSONObject();
+        JSONArray cArray = new JSONArray();
+        JSONArray sArray = new JSONArray();
 
         try {
 
-            for(double val: cValues){
+            for (double val : cValues) {
                 cArray.put(val);
             }
 
             obj.put("C_array", cArray);
 
-            for(String s: sensors){
+            for (String s : sensors) {
                 sArray.put(s);
             }
 

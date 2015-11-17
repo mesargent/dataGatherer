@@ -28,4 +28,15 @@
         android:orderInCategory="100"
         android:title="Send Params"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/delete_params"
+        android:orderInCategory="100"
+        android:title="Delete Params"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/load_csv"
+        android:orderInCategory="100"
+        android:title="load_csv"
+        app:showAsAction="never" />
 </menu>
