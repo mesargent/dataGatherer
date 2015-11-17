@@ -26,17 +26,10 @@ public class SensorService extends Service implements SensorEventListener {
     public static boolean isStarted;
     public static boolean positive;
 
-    private LocationManager manager;
-    private Criteria criteria;
-    private String provider;
-    private Location location;
-
     private int freq = 500000;
     private boolean hostingActivityRunning;
     private List<DataSet> dataArray;
     private int delta;
-
-    private double lattitude, longitude, speedGps;
 
     private String timeStamp;
     private long lastBroadcastTime;
@@ -184,17 +177,12 @@ public class SensorService extends Service implements SensorEventListener {
 
         }
 
-        data.setSpeedGPS(speedGps);
-        data.setTime(timeStamp);
-        data.setLat(lattitude);
-        data.setLng(longitude);
-
         //Log.i("My Code", "Value positive: " + data.isPositive());
         timeStamp = s.format(new Date().getTime());
 
         if (time - lastBroadcastTime >= freq / 1000 && hostingActivityRunning) {
 
-            if(delta > dataArray.size()){
+            if(delta < dataArray.size()){
                 data.setD_accelX(data.getAccelX() - getDeltaDataSet(delta, dataArray).getAccelX());
                 data.setD_accelY(data.getAccelY() - getDeltaDataSet(delta, dataArray).getAccelY());
                 data.setD_accelZ(data.getAccelZ() - getDeltaDataSet(delta, dataArray).getAccelZ());
