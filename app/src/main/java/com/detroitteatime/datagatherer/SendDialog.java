@@ -24,7 +24,7 @@ import java.io.File;
 public class SendDialog extends Activity {
 
 
-    private Button send, cancel, delete;
+    private Button send, cancel;
     private int task = 0;
     private ProgressBar progress;
     private String filename;
@@ -39,20 +39,17 @@ public class SendDialog extends Activity {
 
         Intent intent = getIntent();
         filename = intent.getStringExtra("model_file");
-        predictorNumber = intent.getLongExtra("predictor_id", 0);
+        predictorNumber = intent.getLongExtra("model_file_id", 0);
+
 
         send = (Button) findViewById(R.id.send);
         send.getBackground().setColorFilter(Color.parseColor("#663033"), PorterDuff.Mode.MULTIPLY);
-        delete = (Button) findViewById(R.id.delete);
-        delete.getBackground().setColorFilter(Color.parseColor("#663033"), PorterDuff.Mode.MULTIPLY);
+
         cancel = (Button) findViewById(R.id.cancel);
         cancel.getBackground().setColorFilter(Color.parseColor("#663033"), PorterDuff.Mode.MULTIPLY);
 
 
-        File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictorNumber+ "/" + filename + ".txt");
-        if (!myDir.exists()) {
-            delete.setVisibility(View.GONE);
-        }
+        final File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictorNumber+ "/" + filename + ".txt");
 
         send.setOnClickListener(new OnClickListener() {
 
@@ -67,7 +64,7 @@ public class SendDialog extends Activity {
                 emailIntent.setType("plain/text");
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, subjectString);
                 emailIntent.putExtra(Intent.EXTRA_TEXT, "Attached is your classifier parameters.");
-                emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), DataAccess.dir)));
+                emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(myDir));
                 /* Send it off to the Activity-Chooser */
                 startActivity(Intent.createChooser(emailIntent, "Send mail..."));
 

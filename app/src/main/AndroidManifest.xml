@@ -55,6 +55,15 @@
 
         </activity>
 
+        <activity
+            android:name="com.detroitteatime.datagatherer.SendDialog"
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light"
+            >
+
+        </activity>
+
         <service android:name="com.detroitteatime.datagatherer.SensorService">
         </service>
     </application>

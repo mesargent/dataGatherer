@@ -46,9 +46,15 @@ public class DataAccess {
     }
 
     public static File makeClassifierParametersFile(Context context, String params, File file) {
-        file.mkdirs();
+        file.getParentFile().mkdirs();
+//        String path = file.getAbsolutePath();
+//        Log.i("My Code", file.getAbsolutePath());
+        ///storage/emulated/0/my_classifier_files/1/test1.txt
         BufferedWriter writer = null;
         try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
             writer = new BufferedWriter(new FileWriter(file));
             writer.write(params);
             writer.close();
@@ -56,6 +62,25 @@ public class DataAccess {
             e.printStackTrace();
         }
         return file;
+    }
+
+    /* Checks if external storage is available for read and write */
+    public static boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    /* Checks if external storage is available to at least read */
+    public static boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
     }
 
     public static File saveToCSVFile(Context context) {

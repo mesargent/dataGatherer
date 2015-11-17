@@ -249,13 +249,13 @@ public class CategoryDialog extends Activity {
                     sensors.add(DataBaseHelper.D_ACCELZ);
                 }
 
-                if (xGyro.isChecked()) {
+                if (dxGyro.isChecked()) {
                     sensors.add(DataBaseHelper.D_GYROX);
                 }
-                if (yGyro.isChecked()) {
+                if (dyGyro.isChecked()) {
                     sensors.add(DataBaseHelper.D_GYROY);
                 }
-                if (zGyro.isChecked()) {
+                if (dzGyro.isChecked()) {
                     sensors.add(DataBaseHelper.D_GYROZ);
                 }
 

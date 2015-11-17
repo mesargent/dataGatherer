@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -316,7 +317,7 @@ public class MainActivity extends ActionBarActivity {
             case R.id.send_params:
                 Intent intent1 = new Intent(MainActivity.this, SendDialog.class);
                 intent1.putExtra("model_file", predictor.getName());
-                intent1.putExtra("model_file", predictor.getId());
+                intent1.putExtra("model_file_id", predictor.getId());
                 startActivity(intent1);
                 return true;
             default:
@@ -415,8 +416,8 @@ public class MainActivity extends ActionBarActivity {
             HttpClient httpClient = new DefaultHttpClient();
             HttpContext httpContext = new BasicHttpContext();
 
-            //HttpPost httpPost = new HttpPost("http://162.243.28.75/classify/logistic_regression");
-            HttpPost httpPost = new HttpPost("http://192.168.1.4:8000/classify/logistic_regression");
+            HttpPost httpPost = new HttpPost("http://162.243.28.75/classify/logistic_regression");
+            //HttpPost httpPost = new HttpPost("http://192.168.1.4:8000/classify/logistic_regression");
 
             try {
 
@@ -434,8 +435,14 @@ public class MainActivity extends ActionBarActivity {
                 predictor.setModel(jsonString);
                 helper.editPredictor(predictor);
 
-                File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".txt");
-                DataAccess.makeClassifierParametersFile(MainActivity.this, jsonString, myDir);
+                if(DataAccess.isExternalStorageWritable()){
+                    File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".txt");
+                    DataAccess.makeClassifierParametersFile(MainActivity.this, jsonString, myDir);
+                }else{
+                    Log.e("My Code", "storage not available");
+                }
+
+
 
 
             } catch (Exception e) {
