@@ -42,7 +42,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,19 +61,22 @@ public class MainActivity extends ActionBarActivity {
             xAcc, yAcc, zAcc,
             xGyro, yGyro, zGyro,
             xMag, yMag, zMag,
-            deltaVal, sRateVal;
+            sRateVal;
 
 
     private ResponseReceiver receiver;
     private DataBaseHelper dbHelper;
-    private List<DataSet> dataArray;
+
     private long predictorId;
     private Predictor predictor;
-    private SeekBar deltaBar, samplingBar;
+    private SeekBar samplingBar;
     private int samplingRate = 200;
-    private int delta;
+
+    private String jsonString = "Process data first";
 
     SendJSONTask task;
+
+    private List<DataSet> tempArray = new ArrayList<>();
 
 
     @SuppressWarnings("deprecation")
@@ -104,7 +106,6 @@ public class MainActivity extends ActionBarActivity {
         //Instantiate the Predictor
         predictor = helper.getPredictorById(predictorId);
 
-
         //Get all the textviews
         title = (TextView) findViewById(R.id.title_prompt);
         title.setText("Name: " + predictor.getName() + " Class: " + predictor.getCategory() + " Method: " + predictor.getMethod());
@@ -120,36 +121,16 @@ public class MainActivity extends ActionBarActivity {
         zMag = (TextView) findViewById(R.id.magZ);
 
         sRateVal = (TextView) findViewById(R.id.sample_rate_display);
-        deltaVal = (TextView) findViewById(R.id.delta_display);
-
         //Get seekbars
-        deltaBar = (SeekBar) findViewById(R.id.delta_value);
+        sRateVal.setText("10 ms");
+
         samplingBar = (SeekBar) findViewById(R.id.sample_rate);
-
-        deltaBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                delta = i;
-                deltaVal.setText(String.valueOf(i) + " readings");
-                if(mBoundService!=null) mBoundService.setDelta(delta);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
 
         samplingBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
 
-                samplingRate = 200 + i * 50;
+                samplingRate = 10 + i * 50;
                 sRateVal.setText(samplingRate + " ms");
                 if (mBound) {
                     mBoundService.setFreq(samplingRate);
@@ -184,9 +165,6 @@ public class MainActivity extends ActionBarActivity {
                     bindService(new Intent(MainActivity.this,
                             SensorService.class), mConnection, BIND_AUTO_CREATE);
                     mBound = true;
-                    mBoundService.setPositive(positive);
-
-                    dataArray = new ArrayList<>();
 
 
                 } else {
@@ -194,11 +172,13 @@ public class MainActivity extends ActionBarActivity {
                             SensorService.class));
 
                     if (mBound) {
+                        tempArray = mBoundService.getDataArray();
                         mBoundService.disableSensor();
                         unbindService(mConnection);
                         stopService(new Intent(MainActivity.this,
                                 SensorService.class));
                         mBound = false;
+
                     }
                 }
             }
@@ -208,7 +188,7 @@ public class MainActivity extends ActionBarActivity {
         label.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                positive = (isChecked)?true:false;
+                positive = (isChecked) ? true : false;
                 if (mBoundService == null)
                     Toast.makeText(buttonView.getContext(), "No running services", Toast.LENGTH_LONG).show();
                 else mBoundService.setPositive(positive);
@@ -222,10 +202,10 @@ public class MainActivity extends ActionBarActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        dataArray = mBoundService.getDataArray();
+                        List<DataSet> dataArray = mBoundService.getDataArray();
                         dbHelper = (dbHelper == null) ? DataBaseHelper.getInstance(MainActivity.this) : dbHelper;
                         dbHelper.insertDataArray(dataArray);
-                        dataArray.clear();
+
 
                     }
                 }).start();
@@ -248,13 +228,14 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ResultsView.class);
                 intent.putExtra("predictorId", predictorId);
+                intent.putExtra("results", jsonString);
                 startActivity(intent);
             }
         });
 
         progress = (ProgressBar) findViewById(R.id.progressBar);
 
-        if(predictor.getModel()!=null){
+        if (predictor.getModel() != null) {
             results.setVisibility(View.VISIBLE);
         }
 
@@ -301,34 +282,40 @@ public class MainActivity extends ActionBarActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.save_csv:
-                File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".csv");
-                DataAccess.saveToCSVFile(this, myDir);
+//                File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+//                DataAccess.saveToCSVFile(this, myDir);
                 return true;
 
             case R.id.load_csv:
-                File file = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".csv");
-                if(file.exists()){
-                    dbHelper = DataBaseHelper.getInstance(this);
-                    dbHelper.getWritableDatabase().execSQL("delete from " + DataBaseHelper.SENSOR_TABLE_NAME);
-                    try {
-                        DataAccess.loadCSV(this, file);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    Toast.makeText(this, "CSV file doesn't exist", Toast.LENGTH_LONG).show();
-                }
+//                File file = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+//                if (file.exists()) {
+//                    dbHelper = DataBaseHelper.getInstance(this);
+//                    dbHelper.getWritableDatabase().execSQL("delete from " + DataBaseHelper.SENSOR_TABLE_NAME);
+//                    try {
+//                        DataAccess.loadCSV(this, file);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                } else {
+//                    Toast.makeText(this, "CSV file doesn't exist", Toast.LENGTH_LONG).show();
+//                }
 
                 return true;
 
             case R.id.delete_csv:
-                File csvFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".csv");
-                DataAccess.deleteRecursive(csvFile);
-                return true;
+//                File csvFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+//                DataAccess.deleteRecursive(csvFile);
+//                return true;
 
             case R.id.clear_db:
                 dbHelper = DataBaseHelper.getInstance(this);
                 dbHelper.getWritableDatabase().execSQL("delete from " + DataBaseHelper.SENSOR_TABLE_NAME);
+                if (mBoundService != null) {
+                    List<DataSet> dataArray = mBoundService.getDataArray();
+                    dataArray.clear();
+                }
+                if (tempArray != null)
+                    tempArray.clear();
                 return true;
 
             case R.id.change_predictor:
@@ -344,7 +331,7 @@ public class MainActivity extends ActionBarActivity {
                 return true;
 
             case R.id.delete_params:
-                File paramFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".txt");
+                File paramFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".txt");
                 DataAccess.deleteRecursive(paramFile);
                 return true;
 
@@ -357,10 +344,9 @@ public class MainActivity extends ActionBarActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mBoundService = ((SensorService.LocalBinder) service).getService();
             mBoundService.setFreq(samplingRate);
-            mBoundService.setDelta(delta);
             mBoundService.setHostingActivityRunning(true);
-
-
+            mBoundService.setPositive(positive);
+            mBoundService.setDataArray(tempArray);
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -369,7 +355,6 @@ public class MainActivity extends ActionBarActivity {
         }
     };
 
-
     // Broadcast receiver for receiving status updates from the IntentService
     private class ResponseReceiver extends BroadcastReceiver {
 
@@ -377,7 +362,7 @@ public class MainActivity extends ActionBarActivity {
         public void onReceive(Context context, Intent intent) {
             DataSet data = (DataSet) intent.getSerializableExtra(Constants.DATA);
 
-           // Log.i("My Code", "Receieved value positive: " + data.isPositive());
+            // Log.i("My Code", "Receieved value positive: " + data.isPositive());
 
             xAcc.setText(String.format(format, data.getAccelX()));
             yAcc.setText(String.format(format, data.getAccelY()));
@@ -391,7 +376,7 @@ public class MainActivity extends ActionBarActivity {
             yMag.setText(String.format(format, data.getMagY()));
             zMag.setText(String.format(format, data.getMagZ()));
 
-           // Log.i("My Code", "Received Object ref: " + data.toString());
+            // Log.i("My Code", "Received Object ref: " + data.toString());
 
         }
     }
@@ -434,7 +419,6 @@ public class MainActivity extends ActionBarActivity {
                     bundle.put("class", predictor.getCategory());
                 bundle.put("method", predictor.getMethod());
                 bundle.put("params", predictor.getParameterString());
-                bundle.put("delta", delta);
 
 
             } catch (JSONException e) {
@@ -459,15 +443,15 @@ public class MainActivity extends ActionBarActivity {
                 HttpResponse response = httpClient.execute(httpPost, httpContext); //execute your request and parse response
                 HttpEntity entity = response.getEntity();
 
-                String jsonString = EntityUtils.toString(entity); //if response in JSON format
+                jsonString = EntityUtils.toString(entity); //if response in JSON format
 
                 predictor.setModel(jsonString);
                 helper.editPredictor(predictor);
 
-                if(DataAccess.isExternalStorageWritable()){
-                    File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".txt");
+                if (DataAccess.isExternalStorageWritable()) {
+                    File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".txt");
                     DataAccess.makeClassifierParametersFile(MainActivity.this, jsonString, myDir);
-                }else{
+                } else {
                     Log.e("My Code", "storage not available");
                 }
 

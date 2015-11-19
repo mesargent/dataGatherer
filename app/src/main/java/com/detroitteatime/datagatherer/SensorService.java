@@ -7,9 +7,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -18,18 +15,17 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class SensorService extends Service implements SensorEventListener {
     public static boolean isStarted;
-    public static boolean positive;
+    public boolean positive;
 
-    private int freq = 500000;
+    private int freq = 100000;
     private boolean hostingActivityRunning;
     private List<DataSet> dataArray;
-    private int delta;
+
 
     private String timeStamp;
     private long lastBroadcastTime;
@@ -75,7 +71,7 @@ public class SensorService extends Service implements SensorEventListener {
     public void onCreate() {
         super.onCreate();
         data = new DataSet();
-        dataArray = new ArrayList<>();
+
 
         s = new SimpleDateFormat(DATE_FORMAT);
         Log.i("My Code", "Service created");
@@ -94,7 +90,7 @@ public class SensorService extends Service implements SensorEventListener {
         isStarted = true;
 
         if (intent != null && intent.hasExtra("sampleRate"))
-            freq = intent.getIntExtra("sampleRate", 500) * 1000;
+            freq = intent.getIntExtra("sampleRate", 10) * 1000;
 
 
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -105,6 +101,8 @@ public class SensorService extends Service implements SensorEventListener {
                         "bbb");
 
         mWakeLock.acquire();
+
+        //if (dataArray == null) dataArray = new ArrayList<>();
         return START_STICKY;
     }
 
@@ -180,20 +178,20 @@ public class SensorService extends Service implements SensorEventListener {
         //Log.i("My Code", "Value positive: " + data.isPositive());
         timeStamp = s.format(new Date().getTime());
 
-        if (time - lastBroadcastTime >= freq / 1000 && hostingActivityRunning) {
+        if (time - lastBroadcastTime >= freq / 1000.0 && hostingActivityRunning) {
 
-            if(delta < dataArray.size()){
-                data.setD_accelX(data.getAccelX() - getDeltaDataSet(delta, dataArray).getAccelX());
-                data.setD_accelY(data.getAccelY() - getDeltaDataSet(delta, dataArray).getAccelY());
-                data.setD_accelZ(data.getAccelZ() - getDeltaDataSet(delta, dataArray).getAccelZ());
+            if(dataArray.size() > 0){
+                data.setD_accelX(data.getAccelX() - getDeltaDataSet(dataArray).getAccelX());
+                data.setD_accelY(data.getAccelY() - getDeltaDataSet(dataArray).getAccelY());
+                data.setD_accelZ(data.getAccelZ() - getDeltaDataSet(dataArray).getAccelZ());
 
-                data.setD_gyroX(data.getGyroX() - getDeltaDataSet(delta, dataArray).getGyroX());
-                data.setD_gyroY(data.getGyroY() - getDeltaDataSet(delta, dataArray).getGyroY());
-                data.setD_gyroZ(data.getGyroZ() - getDeltaDataSet(delta, dataArray).getGyroZ());
+                data.setD_gyroX(data.getGyroX() - getDeltaDataSet(dataArray).getGyroX());
+                data.setD_gyroY(data.getGyroY() - getDeltaDataSet(dataArray).getGyroY());
+                data.setD_gyroZ(data.getGyroZ() - getDeltaDataSet(dataArray).getGyroZ());
 
-                data.setD_magX(data.getMagX() - getDeltaDataSet(delta, dataArray).getMagX());
-                data.setD_magY(data.getMagY() - getDeltaDataSet(delta, dataArray).getMagY());
-                data.setD_magZ(data.getMagZ() - getDeltaDataSet(delta, dataArray).getMagZ());
+                data.setD_magX(data.getMagX() - getDeltaDataSet(dataArray).getMagX());
+                data.setD_magY(data.getMagY() - getDeltaDataSet(dataArray).getMagY());
+                data.setD_magZ(data.getMagZ() - getDeltaDataSet(dataArray).getMagZ());
 
             }
             data.setPositive(positive);
@@ -212,8 +210,8 @@ public class SensorService extends Service implements SensorEventListener {
 
     }
 
-    public DataSet getDeltaDataSet(int delta, List<DataSet> dataArray){
-        return dataArray.get(dataArray.size() - delta);
+    public DataSet getDeltaDataSet(List<DataSet> dataArray){
+        return dataArray.get(dataArray.size() - 1);
     }
 
     public void enableSensor() {
@@ -288,12 +286,12 @@ public class SensorService extends Service implements SensorEventListener {
     }
 
 
-    public static boolean isPositive() {
+    public boolean isPositive() {
         return positive;
     }
 
-    public static void setPositive(boolean positive) {
-        SensorService.positive = positive;
+    public void setPositive(boolean positive) {
+        this.positive = positive;
     }
 
     public List<DataSet> getDataArray() {
@@ -322,9 +320,6 @@ public class SensorService extends Service implements SensorEventListener {
 
     public void setHostingActivityRunning(boolean hostingActivityRunning) {
         this.hostingActivityRunning = hostingActivityRunning;
-    }
-    public void setDelta(int delta) {
-        this.delta = delta;
     }
 
 }

@@ -13,20 +13,8 @@ public abstract class Predictor {
     protected double[] parameters;
 
 
-    public Predictor(String name, String category){
-        this.name = name;
-        this.category = category;
-    }
-
     public Predictor(){};
 
-    public abstract double predictProb(double[] features);
-
-    public abstract boolean predict(double[] features);
-
-//    public double[] unpackModel(){
-//        return
-//    }
 
 //Getters and Setters
     public String getName() {
@@ -44,7 +32,6 @@ public abstract class Predictor {
     public void setModel(String model) {
         this.model = model;
     }
-
 
     public String getCategory() {
         return category;

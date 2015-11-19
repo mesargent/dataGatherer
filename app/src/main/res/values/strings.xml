@@ -11,7 +11,7 @@
     <string name="gatheringPrompt">Gathering</string>
     <string name="save_csv">Save CSV</string>
     <string name="delete_csv">Delete CSV</string>
-    <string name="clear_db">Clear Database</string>
+    <string name="clear_db">Clear Data</string>
     <string name="category">Category</string>
     <string name="enter">Enter</string>
     <string name="log_reg">Logistic Regression</string>

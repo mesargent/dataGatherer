@@ -5,17 +5,13 @@ package com.detroitteatime.datagatherer;
  */
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.datagatherer.R;
 
@@ -43,10 +39,9 @@ public class SendDialog extends Activity {
 
 
         send = (Button) findViewById(R.id.send);
-        send.getBackground().setColorFilter(Color.parseColor("#663033"), PorterDuff.Mode.MULTIPLY);
 
         cancel = (Button) findViewById(R.id.cancel);
-        cancel.getBackground().setColorFilter(Color.parseColor("#663033"), PorterDuff.Mode.MULTIPLY);
+
 
 
         final File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictorNumber+ "/" + filename + ".txt");
@@ -91,13 +86,6 @@ public class SendDialog extends Activity {
     protected void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
-
-        if (task == 0) {
-            send.setText("Save");
-        } else {
-            send.setText("Send");
-        }
-
 
     }
 

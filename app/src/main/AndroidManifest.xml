@@ -59,7 +59,7 @@
             android:name="com.detroitteatime.datagatherer.SendDialog"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light"
+            android:theme="@android:style/Theme.Dialog"
             >
 
         </activity>
