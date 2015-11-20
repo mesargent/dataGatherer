@@ -476,5 +476,87 @@ public class MainActivity extends ActionBarActivity {
             return null;
         }
     }
+
+
+    class MakeCSV extends AsyncTask<String, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            process.setVisibility(View.GONE);
+            progress.setVisibility(View.VISIBLE);
+            results.setVisibility(View.GONE);
+            cancel.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            process.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
+            results.setVisibility(View.VISIBLE);
+            cancel.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            return null;
+        }
+    }
+
+    class LoadCSV extends AsyncTask<String, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            process.setVisibility(View.GONE);
+            progress.setVisibility(View.VISIBLE);
+            results.setVisibility(View.GONE);
+            cancel.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            process.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
+            results.setVisibility(View.VISIBLE);
+            cancel.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            return null;
+        }
+    }
+
+    class Save extends AsyncTask<String, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            process.setVisibility(View.GONE);
+            progress.setVisibility(View.VISIBLE);
+            results.setVisibility(View.GONE);
+            cancel.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            process.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
+            results.setVisibility(View.VISIBLE);
+            cancel.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            return null;
+        }
+    }
 }
 
