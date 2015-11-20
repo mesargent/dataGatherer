@@ -42,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -199,16 +200,20 @@ public class MainActivity extends ActionBarActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<DataSet> dataArray = mBoundService.getDataArray();
-                        dbHelper = (dbHelper == null) ? DataBaseHelper.getInstance(MainActivity.this) : dbHelper;
-                        dbHelper.insertDataArray(dataArray);
+                if(mBoundService!=null) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            List<DataSet> dataArray = mBoundService.getDataArray();
+                            dbHelper = (dbHelper == null) ? DataBaseHelper.getInstance(MainActivity.this) : dbHelper;
+                            dbHelper.insertDataArray(dataArray);
 
 
-                    }
-                }).start();
+                        }
+                    }).start();
+                }else{
+                    Toast.makeText(MainActivity.this, "Service not started; no data to load.", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -282,30 +287,39 @@ public class MainActivity extends ActionBarActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.save_csv:
-//                File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
-//                DataAccess.saveToCSVFile(this, myDir);
+                File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+                DataAccess.saveToCSVFile(this, myDir);
                 return true;
 
+            case R.id.send_csv:
+                Intent intent1 = new Intent(MainActivity.this, SendDialog.class);
+                String path = Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".csv";
+                intent1.putExtra("path", path);
+                intent1.putExtra("subject", "Your Data CSV File for: " + predictor.getName());
+                startActivity(intent1);
+
+                return true;
+
+
             case R.id.load_csv:
-//                File file = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
-//                if (file.exists()) {
-//                    dbHelper = DataBaseHelper.getInstance(this);
-//                    dbHelper.getWritableDatabase().execSQL("delete from " + DataBaseHelper.SENSOR_TABLE_NAME);
-//                    try {
-//                        DataAccess.loadCSV(this, file);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                } else {
-//                    Toast.makeText(this, "CSV file doesn't exist", Toast.LENGTH_LONG).show();
-//                }
+                File file = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+                if (file.exists()) {
+                    dbHelper = DataBaseHelper.getInstance(this);
+                    try {
+                        DataAccess.loadCSV(this, file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(this, "CSV file doesn't exist", Toast.LENGTH_LONG).show();
+                }
 
                 return true;
 
             case R.id.delete_csv:
-//                File csvFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
-//                DataAccess.deleteRecursive(csvFile);
-//                return true;
+                File csvFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+                DataAccess.deleteRecursive(csvFile);
+                return true;
 
             case R.id.clear_db:
                 dbHelper = DataBaseHelper.getInstance(this);
@@ -324,10 +338,11 @@ public class MainActivity extends ActionBarActivity {
                 return true;
 
             case R.id.send_params:
-                Intent intent1 = new Intent(MainActivity.this, SendDialog.class);
-                intent1.putExtra("model_file", predictor.getName());
-                intent1.putExtra("model_file_id", predictor.getId());
-                startActivity(intent1);
+                Intent intent2 = new Intent(MainActivity.this, SendDialog.class);
+                String path2 = Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".txt";
+                intent2.putExtra("path", path2);
+                intent2.putExtra("subject", "Your Trained Parameters for: " + predictor.getName());
+                startActivity(intent2);
                 return true;
 
             case R.id.delete_params:

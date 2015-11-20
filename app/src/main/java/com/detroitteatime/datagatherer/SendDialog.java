@@ -23,8 +23,8 @@ public class SendDialog extends Activity {
     private Button send, cancel;
     private int task = 0;
     private ProgressBar progress;
-    private String filename;
-    private long predictorNumber;
+    private String filename, subject;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +34,12 @@ public class SendDialog extends Activity {
         progress = (ProgressBar) findViewById(R.id.progressBar);
 
         Intent intent = getIntent();
-        filename = intent.getStringExtra("model_file");
-        predictorNumber = intent.getLongExtra("model_file_id", 0);
-
-
+        filename = intent.getStringExtra("path");
+        subject = intent.getStringExtra("subject");
         send = (Button) findViewById(R.id.send);
-
         cancel = (Button) findViewById(R.id.cancel);
 
-
-
-        final File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictorNumber+ "/" + filename + ".txt");
+        final File myDir = new File(filename);
 
         send.setOnClickListener(new OnClickListener() {
 
@@ -52,12 +47,9 @@ public class SendDialog extends Activity {
             public void onClick(View v) {
 
                 final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-
-                String subjectString = "Classifier Parameters for " + filename;
-
                 /* Fill it with Data */
                 emailIntent.setType("plain/text");
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, subjectString);
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
                 emailIntent.putExtra(Intent.EXTRA_TEXT, "Attached is your classifier parameters.");
                 emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(myDir));
                 /* Send it off to the Activity-Chooser */
@@ -65,7 +57,6 @@ public class SendDialog extends Activity {
 
             }
         });
-
 
         cancel.setOnClickListener(new OnClickListener() {
 
@@ -76,11 +67,7 @@ public class SendDialog extends Activity {
 
             }
         });
-
-
-
     }
-
 
     @Override
     protected void onResume() {
@@ -88,8 +75,4 @@ public class SendDialog extends Activity {
         super.onResume();
 
     }
-
-
-
-
 }

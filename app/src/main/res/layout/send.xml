@@ -10,7 +10,7 @@
         android:id="@+id/send"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Email Parameters"
+        android:text="Send File"
         android:textColor="@color/white"
         android:layout_marginTop="10dp"
         style="@style/main_button"

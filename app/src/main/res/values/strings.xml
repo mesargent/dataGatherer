@@ -10,6 +10,7 @@
     <string name="stopGathering">Stop Gathering</string>
     <string name="gatheringPrompt">Gathering</string>
     <string name="save_csv">Save CSV</string>
+    <string name="send_csv">Send CSV</string>
     <string name="delete_csv">Delete CSV</string>
     <string name="clear_db">Clear Data</string>
     <string name="category">Category</string>

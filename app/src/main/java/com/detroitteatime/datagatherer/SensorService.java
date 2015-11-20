@@ -195,6 +195,7 @@ public class SensorService extends Service implements SensorEventListener {
 
             }
             data.setPositive(positive);
+            data.setTime(new Date());
 
             try {
                 dataArray.add((DataSet)data.clone());
@@ -226,8 +227,6 @@ public class SensorService extends Service implements SensorEventListener {
     public void resetSensors() {
         sensorManager.unregisterListener(this);
         enableSensor();
-        Log.i("My Code", "Reset sensors");
-
     }
 
     public void disableSensor() {
@@ -284,7 +283,6 @@ public class SensorService extends Service implements SensorEventListener {
     public int getFreq() {
         return freq;
     }
-
 
     public boolean isPositive() {
         return positive;

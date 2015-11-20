@@ -2,13 +2,14 @@ package com.detroitteatime.datagatherer;
 
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class DataSet implements Serializable, Cloneable {
     private double lat;
     private double lng;
     private double speedGPS;
     private double speedACC;
-    private String time;
+    private Date time;
     private double accelX;
     private double accelY;
     private double accelZ;
@@ -184,11 +185,11 @@ public class DataSet implements Serializable, Cloneable {
         this.speedACC = speedACC;
     }
 
-    public String getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 

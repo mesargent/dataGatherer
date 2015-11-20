@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DataAccess {
     public static final String dir = "SensorData";
@@ -97,6 +98,7 @@ public class DataAccess {
 
                 // use comma as separator
                 String[] dataset = line.split(cvsSplitBy);
+                //skipping id column
                 ds.setAccelX(Double.parseDouble(dataset[1]));
                 ds.setAccelY(Double.parseDouble(dataset[2]));
                 ds.setAccelZ(Double.parseDouble(dataset[3]));
@@ -132,6 +134,9 @@ public class DataAccess {
                 ds.setD_gyroX(Double.parseDouble(dataset[25]));
                 ds.setD_gyroY(Double.parseDouble(dataset[26]));
                 ds.setD_gyroZ(Double.parseDouble(dataset[27]));
+
+                ds.setTime(new Date(dataset[28]));
+                ds.setPositive(Boolean.parseBoolean(dataset[29]));
 
                 helper.insertData(ds);
             }
@@ -216,9 +221,11 @@ public class DataAccess {
             writer.write(",");
             writer.write("D_GyroscopeZ");
             writer.write(",");
+            writer.write("Time");
+            writer.write(",");
+            writer.write("Label");
+            writer.write(",");
 
-
-            writer.write("");
             writer.write('\n');
 
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
@@ -263,10 +270,6 @@ public class DataAccess {
 
                 String time = cursor.getString(cursor.getColumnIndex(DataBaseHelper.TIME));
                 String positive = cursor.getString(cursor.getColumnIndex(DataBaseHelper.POSITIVE));
-
-                if (positive == null) {
-                    positive = "";
-                }
 
 
                 writer.write(String.valueOf(id));

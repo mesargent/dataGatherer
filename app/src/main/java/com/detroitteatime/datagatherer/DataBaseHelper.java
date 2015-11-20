@@ -98,9 +98,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         try {
             db.execSQL("CREATE TABLE " + SENSOR_TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    SPEED_GPS + " REAL, " +
-                    LATTITUDE + " REAL, " +
-                    LONGITUDE + " REAL, " +
 
                     ACCELX + " REAL, " +
                     ACCELY + " REAL, " +
@@ -157,9 +154,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void open(int i) {
-
         ourDatabase = getWritableDatabase();
-
     }
 
     public void close() {
@@ -203,16 +198,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 null, null, TIME, null);
 
         return cursor;
-
     }
 
     public ContentValues setValues(DataSet data) {
 
         ContentValues cv = new ContentValues();
-        cv.put(SPEED_GPS, data.getSpeedGPS());
-        cv.put(LONGITUDE, data.getLng());
-        cv.put(LATTITUDE, data.getLat());
-        cv.put(TIME, data.getTime());
+
+        cv.put(TIME, data.getTime().toString());
 
         cv.put(ACCELX, data.getAccelX());
         cv.put(ACCELY, data.getAccelY());
@@ -248,7 +240,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(ORIENTY, data.getOrientY());
         cv.put(ORIENTZ, data.getOrientZ());
         cv.put(POSITIVE, data.isPositive());
-
         return cv;
     }
 
