@@ -13,6 +13,13 @@
         android:orderInCategory="100"
         android:title="@string/save_csv"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/load_csv"
+        android:orderInCategory="100"
+        android:title="Load CSV"
+        app:showAsAction="never" />
+
     <item
         android:id="@+id/send_csv"
         android:orderInCategory="100"
@@ -40,9 +47,5 @@
         android:title="Delete Params"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/load_csv"
-        android:orderInCategory="100"
-        android:title="load_csv"
-        app:showAsAction="never" />
+
 </menu>

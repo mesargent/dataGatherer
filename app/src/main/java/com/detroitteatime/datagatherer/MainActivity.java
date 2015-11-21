@@ -200,20 +200,7 @@ public class MainActivity extends ActionBarActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mBoundService!=null) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            List<DataSet> dataArray = mBoundService.getDataArray();
-                            dbHelper = (dbHelper == null) ? DataBaseHelper.getInstance(MainActivity.this) : dbHelper;
-                            dbHelper.insertDataArray(dataArray);
-
-
-                        }
-                    }).start();
-                }else{
-                    Toast.makeText(MainActivity.this, "Service not started; no data to load.", Toast.LENGTH_LONG).show();
-                }
+                AsyncTask saveTask = new Save().execute();
             }
         });
 
@@ -287,8 +274,7 @@ public class MainActivity extends ActionBarActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.save_csv:
-                File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
-                DataAccess.saveToCSVFile(this, myDir);
+                AsyncTask make = new MakeCSV().execute();
                 return true;
 
             case R.id.send_csv:
@@ -297,23 +283,10 @@ public class MainActivity extends ActionBarActivity {
                 intent1.putExtra("path", path);
                 intent1.putExtra("subject", "Your Data CSV File for: " + predictor.getName());
                 startActivity(intent1);
-
                 return true;
 
-
             case R.id.load_csv:
-                File file = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
-                if (file.exists()) {
-                    dbHelper = DataBaseHelper.getInstance(this);
-                    try {
-                        DataAccess.loadCSV(this, file);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Toast.makeText(this, "CSV file doesn't exist", Toast.LENGTH_LONG).show();
-                }
-
+                AsyncTask load = new LoadCSV().execute();
                 return true;
 
             case R.id.delete_csv:
@@ -396,13 +369,11 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
     class SendJSONTask extends AsyncTask<String, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            process.setVisibility(View.GONE);
             progress.setVisibility(View.VISIBLE);
             results.setVisibility(View.GONE);
             cancel.setVisibility(View.VISIBLE);
@@ -412,7 +383,6 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            process.setVisibility(View.VISIBLE);
             progress.setVisibility(View.GONE);
             results.setVisibility(View.VISIBLE);
             cancel.setVisibility(View.GONE);
@@ -477,30 +447,25 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-
     class MakeCSV extends AsyncTask<String, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            process.setVisibility(View.GONE);
             progress.setVisibility(View.VISIBLE);
-            results.setVisibility(View.GONE);
-            cancel.setVisibility(View.VISIBLE);
 
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            process.setVisibility(View.VISIBLE);
+
             progress.setVisibility(View.GONE);
-            results.setVisibility(View.VISIBLE);
-            cancel.setVisibility(View.GONE);
         }
 
         @Override
         protected Void doInBackground(String... strings) {
-
+            File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+            DataAccess.saveToCSVFile(MainActivity.this, myDir);
             return null;
         }
     }
@@ -509,24 +474,30 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            process.setVisibility(View.GONE);
             progress.setVisibility(View.VISIBLE);
-            results.setVisibility(View.GONE);
-            cancel.setVisibility(View.VISIBLE);
 
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            process.setVisibility(View.VISIBLE);
             progress.setVisibility(View.GONE);
-            results.setVisibility(View.VISIBLE);
-            cancel.setVisibility(View.GONE);
+
         }
 
         @Override
         protected Void doInBackground(String... strings) {
+            File file = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+            if (file.exists()) {
+                dbHelper = DataBaseHelper.getInstance(MainActivity.this);
+                try {
+                    DataAccess.loadCSV(MainActivity.this, file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(MainActivity.this, "CSV file doesn't exist", Toast.LENGTH_LONG).show();
+            }
 
             return null;
         }
@@ -536,25 +507,32 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            process.setVisibility(View.GONE);
             progress.setVisibility(View.VISIBLE);
-            results.setVisibility(View.GONE);
-            cancel.setVisibility(View.VISIBLE);
 
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            process.setVisibility(View.VISIBLE);
             progress.setVisibility(View.GONE);
-            results.setVisibility(View.VISIBLE);
-            cancel.setVisibility(View.GONE);
         }
 
         @Override
         protected Void doInBackground(String... strings) {
+            if(mBoundService!=null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<DataSet> dataArray = mBoundService.getDataArray();
+                        dbHelper = (dbHelper == null) ? DataBaseHelper.getInstance(MainActivity.this) : dbHelper;
+                        dbHelper.insertDataArray(dataArray);
 
+
+                    }
+                }).start();
+            }else{
+                Toast.makeText(MainActivity.this, "Service not started; no data to load.", Toast.LENGTH_LONG).show();
+            }
             return null;
         }
     }

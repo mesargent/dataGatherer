@@ -24,6 +24,7 @@ public class ResultsView extends ActionBarActivity {
         wv.getSettings().setJavaScriptEnabled(true);
         wv.loadData(results, "text/html", "utf-8");
 
+        //wv.loadUrl("http://192.168.1.4:8000/classify/results");
 
 
 
