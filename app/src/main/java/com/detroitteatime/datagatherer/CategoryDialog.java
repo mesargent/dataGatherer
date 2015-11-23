@@ -22,11 +22,11 @@ import java.util.ArrayList;
 
 public class CategoryDialog extends Activity {
     protected Button enter, delete;
-    protected EditText name, category, noPCs;
+    protected EditText name, category;
     protected RadioGroup methodGroup;
     protected CheckBox cp01, cp1, c1, c10, c100, xAcc, yAcc, zAcc,
             xGyro, yGyro, zGyro, xMag, yMag, zMag, dxAcc, dyAcc, dzAcc,
-            dxGyro, dyGyro, dzGyro, dxMag, dyMag, dzMag, pca;
+            dxGyro, dyGyro, dzGyro, dxMag, dyMag, dzMag;
     private long id = -1;
 
     @Override
@@ -69,9 +69,6 @@ public class CategoryDialog extends Activity {
         dzMag = (CheckBox) findViewById(R.id.dz_mag);
 
 
-        pca = (CheckBox) findViewById(R.id.pca);
-        noPCs = (EditText) findViewById(R.id.no_pcs);
-
         //Get predictor's id number
         Intent intent = getIntent();
         id = intent.getLongExtra("id", -1);
@@ -85,7 +82,6 @@ public class CategoryDialog extends Activity {
             p.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
             enter.setLayoutParams(p);
-
 
         }
 
@@ -102,10 +98,6 @@ public class CategoryDialog extends Activity {
             String params = predictor.getParameterString();
             try {
                 JSONObject obj = new JSONObject(params);
-                noPCs.setText(obj.get("no_pc").toString());
-
-                boolean usePCA = obj.getBoolean("fit_using_pca");
-                pca.setChecked(usePCA);
 
                 JSONArray sArray = obj.getJSONArray("sensor_array");
                 JSONArray cArray = obj.getJSONArray("C_array");
@@ -142,8 +134,7 @@ public class CategoryDialog extends Activity {
                     case Constants.LOGISIC_REGRESSION:
                         methodGroup.check(R.id.log_reg);
                         break;
-                    case Constants.SVM:
-                        methodGroup.check(R.id.svm);
+
                 }
 
 
@@ -165,12 +156,7 @@ public class CategoryDialog extends Activity {
                     case "Logistic Regression":
                         method = Constants.LOGISIC_REGRESSION;
                         break;
-                    case "Support Vector Machine":
-                        method = Constants.SVM;
-                        break;
-//                    case "Neural Net":
-//                        method = Constants.NEURAL_NET;
-//                        break;
+
                 }
 
                 ArrayList<Double> cParams = new ArrayList<Double>();
@@ -269,22 +255,16 @@ public class CategoryDialog extends Activity {
                     sensors.add(DataBaseHelper.D_MAGNETICZ);
                 }
 
-                String pcString = noPCs.getText().toString();
-
-                int pcs = (pcString != null && pcString.matches("^[0-9]*[1-9][0-9]*$")) ?
-                        Integer.valueOf(noPCs.getText().toString()) : 0;
-
-                JSONObject params = DataAccess.makeParamJSON(cParams, sensors, pca.isChecked(), pcs);
+                JSONObject params = DataAccess.makeParamJSON(cParams, sensors);
 
                 DataBaseHelper helper = DataBaseHelper.getInstance(CategoryDialog.this);
 
                 if(id!=-1){
-                    helper.editPredictor(id, name.getText().toString(), category.getText().toString(), method, params.toString(), null);
+                    helper.editPredictor(id, name.getText().toString(), category.getText().toString(), method, params.toString(), null, null);
                 }else{
 
-                    helper.insertModel(name.getText().toString(), category.getText().toString(), method, params.toString(), null);
+                    helper.insertModel(name.getText().toString(), category.getText().toString(), method, params.toString(), null, null);
                 }
-
 
                 Intent intent = new Intent(CategoryDialog.this, ModelList.class);
                 startActivity(intent);

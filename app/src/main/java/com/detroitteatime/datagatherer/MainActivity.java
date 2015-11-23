@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -73,11 +74,13 @@ public class MainActivity extends ActionBarActivity {
     private SeekBar samplingBar;
     private int samplingRate = 200;
 
-    private String jsonString = "Process data first";
+    private String jsonString;
+    private String html = "Process data first.";
 
     SendJSONTask task;
 
     private List<DataSet> tempArray = new ArrayList<>();
+    private String path;
 
 
     @SuppressWarnings("deprecation")
@@ -106,6 +109,8 @@ public class MainActivity extends ActionBarActivity {
 
         //Instantiate the Predictor
         predictor = helper.getPredictorById(predictorId);
+
+        path = Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "_" + predictor.getName() + "/" + predictor.getName() + ".csv";
 
         //Get all the textviews
         title = (TextView) findViewById(R.id.title_prompt);
@@ -220,15 +225,16 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ResultsView.class);
                 intent.putExtra("predictorId", predictorId);
-                intent.putExtra("results", jsonString);
+                intent.putExtra("results", html);
                 startActivity(intent);
             }
         });
 
         progress = (ProgressBar) findViewById(R.id.progressBar);
 
-        if (predictor.getModel() != null) {
+        if (predictor.getrHhtml() != null) {
             results.setVisibility(View.VISIBLE);
+            html = predictor.getrHhtml();
         }
 
         cancel = (Button) findViewById(R.id.cancel);
@@ -279,7 +285,6 @@ public class MainActivity extends ActionBarActivity {
 
             case R.id.send_csv:
                 Intent intent1 = new Intent(MainActivity.this, SendDialog.class);
-                String path = Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".csv";
                 intent1.putExtra("path", path);
                 intent1.putExtra("subject", "Your Data CSV File for: " + predictor.getName());
                 startActivity(intent1);
@@ -290,7 +295,7 @@ public class MainActivity extends ActionBarActivity {
                 return true;
 
             case R.id.delete_csv:
-                File csvFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+                File csvFile = new File(path);
                 DataAccess.deleteRecursive(csvFile);
                 return true;
 
@@ -312,15 +317,31 @@ public class MainActivity extends ActionBarActivity {
 
             case R.id.send_params:
                 Intent intent2 = new Intent(MainActivity.this, SendDialog.class);
-                String path2 = Environment.getExternalStorageDirectory() + "/my_classifier_files/" +predictor.getId()+ "/" + predictor.getName() + ".txt";
-                intent2.putExtra("path", path2);
+                intent2.putExtra("path", path);
                 intent2.putExtra("subject", "Your Trained Parameters for: " + predictor.getName());
                 startActivity(intent2);
                 return true;
 
             case R.id.delete_params:
-                File paramFile = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".txt");
+                File paramFile = new File(path);
                 DataAccess.deleteRecursive(paramFile);
+                return true;
+
+            case R.id.folder:
+                Toast.makeText(this, "Your data folder location file" + path, Toast.LENGTH_LONG);
+                Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
+                Uri uri = Uri.parse(path);
+                intent3.setDataAndType(uri, "text/csv");
+                startActivity(Intent.createChooser(intent3, "Open folder"));
+
+                if (intent3.resolveActivityInfo(getPackageManager(), 0) != null)
+                {
+                    startActivity(intent3);
+                }
+                else
+                {
+                     Toast.makeText(this, "You don't have a file choosing app. Try Open Intent's File Manager. ", Toast.LENGTH_LONG).show();
+                }
                 return true;
 
             default:
@@ -377,7 +398,7 @@ public class MainActivity extends ActionBarActivity {
             progress.setVisibility(View.VISIBLE);
             results.setVisibility(View.GONE);
             cancel.setVisibility(View.VISIBLE);
-
+            Log.i("My Code", "JSONASYNCTASK: preExecute " + System.currentTimeMillis());
         }
 
         @Override
@@ -390,11 +411,13 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(String... strings) {
+
             DataBaseHelper helper = DataBaseHelper.getInstance(MainActivity.this);
 
             Cursor cursor = helper.getData();
-
+            Log.i("My Code", "JSONASYNCTASK: cursor created " + System.currentTimeMillis());
             JSONArray jArray = DataAccess.cursorToJSON(cursor);
+            Log.i("My Code", "JSONASYNCTASK: JSONarray made " + System.currentTimeMillis());
             JSONObject bundle = new JSONObject();
             try {
                 bundle.put("data", jArray);
@@ -414,11 +437,10 @@ public class MainActivity extends ActionBarActivity {
             HttpClient httpClient = new DefaultHttpClient();
             HttpContext httpContext = new BasicHttpContext();
 
-            HttpPost httpPost = new HttpPost("http://162.243.28.75/classify/logistic_regression");
-            //HttpPost httpPost = new HttpPost("http://192.168.1.4:8000/classify/logistic_regression");
+            //HttpPost httpPost = new HttpPost("http://162.243.28.75/classify/logistic_regression");
+            HttpPost httpPost = new HttpPost("http://192.168.1.4:8000/classify/logistic_regression");
 
             try {
-
                 StringEntity se = new StringEntity(bundle.toString());
 
                 httpPost.setEntity(se);
@@ -428,10 +450,21 @@ public class MainActivity extends ActionBarActivity {
                 HttpResponse response = httpClient.execute(httpPost, httpContext); //execute your request and parse response
                 HttpEntity entity = response.getEntity();
 
-                jsonString = EntityUtils.toString(entity); //if response in JSON format
+                jsonString = EntityUtils.toString(entity);
 
-                predictor.setModel(jsonString);
-                helper.editPredictor(predictor);
+                if(jsonString.startsWith("{")){
+                    JSONObject reply = new JSONObject(jsonString);
+                    Log.i("My Code", "Returned JSON: " + reply.toString());
+                    String model = reply.getString("results");
+                    html = reply.getString("html");
+                    predictor.setModel(model);
+                    predictor.setrHhtml(html);
+                    helper.editPredictor(predictor);
+                }else{
+                    html = jsonString;
+                }
+
+
 
                 if (DataAccess.isExternalStorageWritable()) {
                     File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".txt");
@@ -464,7 +497,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(String... strings) {
-            File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+            File myDir = new File(path);
             DataAccess.saveToCSVFile(MainActivity.this, myDir);
             return null;
         }
@@ -487,7 +520,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(String... strings) {
-            File file = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".csv");
+            File file = new File(path);
             if (file.exists()) {
                 dbHelper = DataBaseHelper.getInstance(MainActivity.this);
                 try {
@@ -495,8 +528,6 @@ public class MainActivity extends ActionBarActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else {
-                Toast.makeText(MainActivity.this, "CSV file doesn't exist", Toast.LENGTH_LONG).show();
             }
 
             return null;
@@ -519,19 +550,13 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(String... strings) {
-            if(mBoundService!=null) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<DataSet> dataArray = mBoundService.getDataArray();
-                        dbHelper = (dbHelper == null) ? DataBaseHelper.getInstance(MainActivity.this) : dbHelper;
-                        dbHelper.insertDataArray(dataArray);
+            if (mBoundService != null) {
+
+                List<DataSet> dataArray = mBoundService.getDataArray();
+                dbHelper = (dbHelper == null) ? DataBaseHelper.getInstance(MainActivity.this) : dbHelper;
+                dbHelper.insertDataArray(dataArray);
 
 
-                    }
-                }).start();
-            }else{
-                Toast.makeText(MainActivity.this, "Service not started; no data to load.", Toast.LENGTH_LONG).show();
             }
             return null;
         }

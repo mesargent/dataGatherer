@@ -136,17 +136,14 @@ public class DataAccess {
                 ds.setD_gyroZ(Double.parseDouble(dataset[27]));
 
                 ds.setTime(new Date(dataset[28]));
-                ds.setPositive(Boolean.parseBoolean(dataset[29]));
+                ds.setPositive(Integer.parseInt(dataset[29])==1);
 
                 helper.insertData(ds);
             }
-
     }
-
 
     public static File saveToCSVFile(Context context, File file) {
         file.getParentFile().mkdirs();
-
 
         DataBaseHelper helper = DataBaseHelper.getInstance(context);
 
@@ -310,7 +307,6 @@ public class DataAccess {
                 writer.write(gyrz);
                 writer.write(",");
 
-
                 writer.write(ox);
                 writer.write(",");
                 writer.write(oy);
@@ -325,14 +321,12 @@ public class DataAccess {
                 writer.write(daz);
                 writer.write(",");
 
-
                 writer.write(dmx);
                 writer.write(",");
                 writer.write(dmy);
                 writer.write(",");
                 writer.write(dmz);
                 writer.write(",");
-
 
                 writer.write(dgyrx);
                 writer.write(",");
@@ -341,13 +335,11 @@ public class DataAccess {
                 writer.write(dgyrz);
                 writer.write(",");
 
-
                 writer.write(time);
                 writer.write(",");
                 writer.write(positive);
                 writer.write(",");
                 writer.write('\n');
-
             }
 
             writer.close();
@@ -375,8 +367,7 @@ public class DataAccess {
 
     }
 
-    public static JSONObject makeParamJSON(ArrayList<Double> cValues, ArrayList<String> sensors,
-                                           boolean usePCA, int noPc) {
+    public static JSONObject makeParamJSON(ArrayList<Double> cValues, ArrayList<String> sensors) {
         JSONObject obj = new JSONObject();
         JSONArray cArray = new JSONArray();
         JSONArray sArray = new JSONArray();
@@ -394,8 +385,7 @@ public class DataAccess {
             }
 
             obj.put("sensor_array", sArray);
-            obj.put("fit_using_pca", usePCA);
-            obj.put("no_pc", noPc);
+
 
         } catch (JSONException e) {
             e.printStackTrace();

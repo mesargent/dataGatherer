@@ -81,12 +81,6 @@
                     android:text="@string/log_reg"
                     android:textColor="@color/regular_text" />
 
-                <RadioButton
-                    android:id="@+id/svm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/svm"
-                    android:textColor="@color/regular_text" />
             </RadioGroup>
 
             <LinearLayout
@@ -337,32 +331,6 @@
                 </ScrollView>
 
             </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/pca"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/enter_category"
-                android:layout_alignStart="@+id/enter_category"
-                android:layout_below="@+id/linearLayout"
-                android:text="Use PCA to fit"
-                android:textColor="@color/regular_text" />
-
-            <EditText
-                android:id="@+id/no_pcs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/linearLayout"
-                android:layout_alignLeft="@+id/linearLayout"
-                android:layout_alignRight="@+id/linearLayout"
-                android:layout_alignStart="@+id/linearLayout"
-                android:layout_below="@+id/linearLayout"
-                android:background="@color/black"
-                android:ems="10"
-                android:hint="# of PCs to use"
-                android:textColorHint="@color/regular_text"
-                android:inputType="number"
-                android:textColor="@color/regular_text" />
 
         </RelativeLayout>
 

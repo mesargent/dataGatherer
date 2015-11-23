@@ -29,6 +29,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String CLASS = "class";
     public static final String PARAMETERS = "parameters";
     public static final String METHOD = "method";
+    public static final String RHTML = "results_html";
 
     public static final String SPEED_GPS = "speed_GPS";
     public static final String SPEED_ACCEL = "speed_accel";
@@ -140,6 +141,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     CLASS + " TEXT, " +
                     MODEL + " TEXT, " +
                     METHOD + " TEXT, " +
+                    RHTML + " TEXT, " +
                     PARAMETERS + " TEXT);");
 
         } catch (SQLiteException e) {
@@ -228,7 +230,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(D_MAGNETICY, data.getMagY());
         cv.put(D_MAGNETICZ, data.getMagZ());
 
-
         cv.put(GYROX, data.getGyroX());
         cv.put(GYROY, data.getGyroY());
         cv.put(GYROZ, data.getGyroZ());
@@ -251,7 +252,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     //// Model methods /////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public ContentValues setModelCV(String name, String c, String method, String params, String model) {
+    public ContentValues setModelCV(String name, String c, String method, String params, String model, String rHtml) {
 
         ContentValues cv = new ContentValues();
         cv.put(NAME, name);
@@ -259,13 +260,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(CLASS, c);
         cv.put(METHOD, method);
         cv.put(PARAMETERS, params);
+        cv.put(RHTML, rHtml);
 
         return cv;
     }
 
-    public long insertModel(String name, String c, String method, String params, String model) {
+    public long insertModel(String name, String c, String method, String params, String model, String rhtml) {
         ourDatabase = getWritableDatabase();
-        ContentValues cv = setModelCV(name, c, method, params, model);
+        ContentValues cv = setModelCV(name, c, method, params, model, rhtml);
         long id = 0;
         try {
             id = ourDatabase.insertOrThrow(MODEL_TABLE_NAME, "nullColumnHack", cv);
@@ -276,12 +278,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public void editPredictor(long id, String name, String c, String method, String params, String model) {
+    public void editPredictor(long id, String name, String c, String method, String params, String model, String rHtml) {
         ourDatabase = getWritableDatabase();
-        ContentValues cv = setModelCV(name, c, method, params, model);
+        ContentValues cv = setModelCV(name, c, method, params, model, rHtml);
         String[] ids = {String.valueOf(id)};
         ourDatabase.update(MODEL_TABLE_NAME, cv, "_id=?", ids);
-
     }
 
     public void deletePredictor(long id) {
@@ -324,6 +325,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String model = c.getString(c.getColumnIndex(MODEL));
         String category = c.getString(c.getColumnIndex(CLASS));
         String parameters = c.getString(c.getColumnIndex(PARAMETERS));
+        String html = c.getString(c.getColumnIndex(RHTML));
 
         switch (method) {
 
@@ -335,19 +337,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 p.setParameterString(parameters);
                 p.setMethod(method);
                 p.setId(id);
+                p.setrHhtml(html);
                 break;
 
-            case Constants.SVM:
-                break;
-            case Constants.NEURAL_NET:
-                break;
         }
 
         return p;
     }
 
-
     public void editPredictor(Predictor p) {
-        editPredictor(p.getId(), p.getName(), p.getCategory(), p.getMethod(), p.getParameterString(), p.getModel());
+        editPredictor(p.getId(), p.getName(), p.getCategory(), p.getMethod(), p.getParameterString(), p.getModel(), p.getrHhtml());
     }
 }

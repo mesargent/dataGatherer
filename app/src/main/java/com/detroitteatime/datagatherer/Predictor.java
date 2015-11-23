@@ -10,8 +10,8 @@ public abstract class Predictor {
     private String model; //JSON string
     private String parameterString; //JSON string
     private String method;
+    private String rHhtml;
     protected double[] parameters;
-
 
     public Predictor(){};
 
@@ -71,5 +71,13 @@ public abstract class Predictor {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getrHhtml() {
+        return rHhtml;
+    }
+
+    public void setrHhtml(String rHhtml) {
+        this.rHhtml = rHhtml;
     }
 }

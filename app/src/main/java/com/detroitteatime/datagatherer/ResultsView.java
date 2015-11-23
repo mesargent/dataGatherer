@@ -16,32 +16,14 @@ public class ResultsView extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.webresult);
 
-        predictorId = getIntent().getLongExtra("predictorId", -1);
-        Predictor predictor = DataBaseHelper.getInstance(this).getPredictorById(predictorId);
         String results = getIntent().getStringExtra("results");
+        if(!results.contains("Process data first."))
+            results = results.split("8", 2)[1];
 
         WebView wv = (WebView)findViewById(R.id.result_view);
-        wv.getSettings().setJavaScriptEnabled(true);
         wv.loadData(results, "text/html", "utf-8");
 
-        //wv.loadUrl("http://192.168.1.4:8000/classify/results");
-
-
-
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-
-    }
-
 
 }
 

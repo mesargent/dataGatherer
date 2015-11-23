@@ -47,5 +47,11 @@
         android:title="Delete Params"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/folder"
+        android:orderInCategory="100"
+        android:title="Open Data Folder"
+        app:showAsAction="never" />
+
 
 </menu>
