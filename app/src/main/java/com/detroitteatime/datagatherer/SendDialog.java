@@ -49,7 +49,7 @@ public class SendDialog extends Activity {
                 /* Fill it with Data */
                 emailIntent.setType("plain/text");
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "Attached is your classifier parameters.");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Attached is your Data Gatherer file.");
                 emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(myDir));
                 /* Send it off to the Activity-Chooser */
                 startActivity(Intent.createChooser(emailIntent, "Send mail..."));

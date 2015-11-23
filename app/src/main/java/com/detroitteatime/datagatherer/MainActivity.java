@@ -110,7 +110,7 @@ public class MainActivity extends ActionBarActivity {
         //Instantiate the Predictor
         predictor = helper.getPredictorById(predictorId);
 
-        path = Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "_" + predictor.getName() + "/" + predictor.getName();
+        path = Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "_" + predictor.getName() + "/" + predictor.getName() + ".";
 
         //Get all the textviews
         title = (TextView) findViewById(R.id.title_prompt);
@@ -452,10 +452,11 @@ public class MainActivity extends ActionBarActivity {
 
                 jsonString = EntityUtils.toString(entity);
 
+                String model = null;
                 if(jsonString.startsWith("{")){
                     JSONObject reply = new JSONObject(jsonString);
                     Log.i("My Code", "Returned JSON: " + reply.toString());
-                    String model = reply.getString("results");
+                    model = reply.getString("results");
                     html = reply.getString("html");
                     predictor.setModel(model);
                     predictor.setrHhtml(html);
@@ -466,8 +467,8 @@ public class MainActivity extends ActionBarActivity {
 
 
                 if (DataAccess.isExternalStorageWritable()) {
-                    File myDir = new File(path+ ".txt");
-                    DataAccess.makeClassifierParametersFile(MainActivity.this, jsonString, myDir);
+                    File myDir = new File(path+ "txt");
+                    DataAccess.makeClassifierParametersFile(MainActivity.this, model, myDir);
                 } else {
                     Log.e("My Code", "storage not available");
                 }
