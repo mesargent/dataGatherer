@@ -110,7 +110,7 @@ public class MainActivity extends ActionBarActivity {
         //Instantiate the Predictor
         predictor = helper.getPredictorById(predictorId);
 
-        path = Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "_" + predictor.getName() + "/" + predictor.getName() + ".csv";
+        path = Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "_" + predictor.getName() + "/" + predictor.getName();
 
         //Get all the textviews
         title = (TextView) findViewById(R.id.title_prompt);
@@ -285,7 +285,7 @@ public class MainActivity extends ActionBarActivity {
 
             case R.id.send_csv:
                 Intent intent1 = new Intent(MainActivity.this, SendDialog.class);
-                intent1.putExtra("path", path);
+                intent1.putExtra("path", path+"csv");
                 intent1.putExtra("subject", "Your Data CSV File for: " + predictor.getName());
                 startActivity(intent1);
                 return true;
@@ -295,7 +295,7 @@ public class MainActivity extends ActionBarActivity {
                 return true;
 
             case R.id.delete_csv:
-                File csvFile = new File(path);
+                File csvFile = new File(path+"csv");
                 DataAccess.deleteRecursive(csvFile);
                 return true;
 
@@ -317,13 +317,13 @@ public class MainActivity extends ActionBarActivity {
 
             case R.id.send_params:
                 Intent intent2 = new Intent(MainActivity.this, SendDialog.class);
-                intent2.putExtra("path", path);
+                intent2.putExtra("path", path + "txt");
                 intent2.putExtra("subject", "Your Trained Parameters for: " + predictor.getName());
                 startActivity(intent2);
                 return true;
 
             case R.id.delete_params:
-                File paramFile = new File(path);
+                File paramFile = new File(path+"txt");
                 DataAccess.deleteRecursive(paramFile);
                 return true;
 
@@ -497,7 +497,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(String... strings) {
-            File myDir = new File(path);
+            File myDir = new File(path+"csv");
             DataAccess.saveToCSVFile(MainActivity.this, myDir);
             return null;
         }
@@ -520,7 +520,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(String... strings) {
-            File file = new File(path);
+            File file = new File(path+"csv");
             if (file.exists()) {
                 dbHelper = DataBaseHelper.getInstance(MainActivity.this);
                 try {
