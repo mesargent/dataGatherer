@@ -465,9 +465,8 @@ public class MainActivity extends ActionBarActivity {
                 }
 
 
-
                 if (DataAccess.isExternalStorageWritable()) {
-                    File myDir = new File(Environment.getExternalStorageDirectory() + "/my_classifier_files/" + predictor.getId() + "/" + predictor.getName() + ".txt");
+                    File myDir = new File(path+ ".txt");
                     DataAccess.makeClassifierParametersFile(MainActivity.this, jsonString, myDir);
                 } else {
                     Log.e("My Code", "storage not available");
