@@ -437,8 +437,8 @@ public class MainActivity extends ActionBarActivity {
             HttpClient httpClient = new DefaultHttpClient();
             HttpContext httpContext = new BasicHttpContext();
 
-            //HttpPost httpPost = new HttpPost("http://162.243.28.75/classify/logistic_regression");
-            HttpPost httpPost = new HttpPost("http://192.168.1.4:8000/classify/logistic_regression");
+            HttpPost httpPost = new HttpPost("http://162.243.28.75/classify/logistic_regression");
+            //HttpPost httpPost = new HttpPost("http://192.168.1.4:8000/classify/logistic_regression");
 
             try {
                 StringEntity se = new StringEntity(bundle.toString());
