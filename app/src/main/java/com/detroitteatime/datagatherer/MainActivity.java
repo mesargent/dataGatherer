@@ -45,6 +45,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
@@ -79,7 +80,7 @@ public class MainActivity extends ActionBarActivity {
 
     SendJSONTask task;
 
-    private List<DataSet> tempArray = new ArrayList<>();
+    private List<DataSet> tempArray = Collections.synchronizedList(new ArrayList<DataSet>());
     private String path;
 
 
