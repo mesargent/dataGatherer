@@ -3,8 +3,4 @@ This is the first component in MyClassifier. It's an Android application that ga
 
 This app also can store sensor data in .csv format for data analysis. 
 
-This is a working prototype: refactoring in process. 
-
-More documentation coming soon!
-
 
